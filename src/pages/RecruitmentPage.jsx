@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { candidateService } from '../services/candidateService.js';
+import { KanbanBoard } from '../components/KanbanBoard';
 
 export const RecruitmentPage = () => {
   const [candidates, setCandidates] = useState([]);
@@ -7,7 +8,6 @@ export const RecruitmentPage = () => {
   useEffect(() => {
     const loadCandidates = async () => {
       try {
-        // Llamamos al puente que se construyo
         const data = await candidateService.getAll();
         setCandidates(data);
       } catch (error) {
@@ -18,15 +18,40 @@ export const RecruitmentPage = () => {
     loadCandidates();
   }, []);
 
+  // Función que se ejecuta al soltar la tarjeta en una nueva columna
+  const handleStatusChange = async (candidateId, newStatus) => {
+    // 1. Actualización visual instantánea en React
+    setCandidates(prevCandidates => 
+      prevCandidates.map(c => 
+        // Comparamos usando == por si el ID viene como texto o número
+        (c.id == candidateId || c._id == candidateId) 
+          ? { ...c, estado: newStatus } 
+          : c
+      )
+    );
+
+    // 2. Aquí preparas la conexión con el Backend (Electron/MongoDB)
+    try {
+      // Cuando tengas el update listo en tu Service, descomentas esta línea:
+      // await candidateService.updateStatus(candidateId, newStatus);
+      console.log(`Exito: Candidato ${candidateId} movido a la fase '${newStatus}'`);
+    } catch (error) {
+      console.error("Error al actualizar en la base de datos:", error);
+    }
+  };
+
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
       <h1>Tablero de Selección</h1>
-      <p>Total de postulantes obtenidos desde Electron: <strong>{candidates.length}</strong></p>
+      <p style={{ color: '#666' }}>
+        Total de postulantes activos: <strong>{candidates.length}</strong>
+      </p>
       
-      <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#e2e8f0', borderRadius: '8px' }}>
-        <h2>Datos en crudo (Prueba de conexión):</h2>
-        <pre>{JSON.stringify(candidates, null, 2)}</pre>
-      </div>
+      {/* Le pasamos la nueva función al tablero */}
+      <KanbanBoard 
+        candidates={candidates} 
+        onStatusChange={handleStatusChange} 
+      />
     </div>
   );
 };
