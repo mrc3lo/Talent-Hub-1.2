@@ -28,14 +28,17 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:5173'); 
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Importamos el archivo de Reclutamiento de forma dinámica
+  const { setupCandidateIPC } = await import('./ipc/candidate.js');
+  
+  // Se ejecutamos
+  setupCandidateIPC();
+
+  // Creamos la ventana
   createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
 });
