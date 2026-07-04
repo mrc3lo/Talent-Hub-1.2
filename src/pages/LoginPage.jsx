@@ -2,20 +2,24 @@
 import React, { useState } from 'react';
 import { authService } from '../services/authService';
 
-const LoginPage = () => {
+const LoginPage = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const result = await authService.login(email, password);
+
+    // --- ATRAVESAMOS EL LOGIN TEMPORALMENTE PARA PROBAR LA NAVEGACIÓN ---
+    // En lugar de llamar a authService.login, forzamos un resultado exitoso
+    const result = { success: true }; 
+    // --------------------------------------------------------------------
 
     if (result.success) {
-      alert('¡Bienvenido a TalentHub!');
-      // Aquí redirigiríamos al Dashboard
+      // Invocamos la función para cambiar de pantalla al directorio de empleados
+      onLoginSuccess(); 
     } else {
-      setError(result.message);
+      setError('No se pudo conectar con el servicio de autenticación');
     }
   };
 

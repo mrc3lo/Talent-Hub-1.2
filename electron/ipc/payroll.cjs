@@ -1,19 +1,26 @@
-// electron/ipc/payroll.js
+// electron/ipc/payroll.cjs
 const { ipcMain } = require('electron');
 
-// Quitamos el 'db' de los parámetros por ahora
 function setupPayrollIPC() {
+  // Manejador para obtener todas las nóminas
   ipcMain.handle('nomina:getAll', async () => {
-    console.log("Petición recibida en payroll.js: nomina:getAll");
+    console.log("Petición recibida en payroll.cjs: nomina:getAll");
     
-    // Devolvemos datos de prueba temporales hasta que conecten MongoDB
+    // Datos consistentes con los empleados del sistema
     return { 
       success: true, 
       data: [
-        { _id: 1, nombreEmpleado: "Matías Carrasco", monto: 1500000 },
-        { _id: 2, nombreEmpleado: "Ana Silva", monto: 1200000 }
+        { _id: 1, nombreEmpleado: "Juan Pérez", monto: 1500000 },
+        { _id: 2, nombreEmpleado: "María López", monto: 1200000 }
       ] 
     };
+  });
+
+  // Manejador para filtrar nóminas
+  ipcMain.handle('nomina:filter', async (event, criteria) => {
+    console.log("Filtrando nóminas con:", criteria);
+    // Lógica futura para filtrar en MongoDB
+    return { success: true, data: [] };
   });
 }
 
