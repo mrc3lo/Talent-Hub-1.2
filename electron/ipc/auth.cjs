@@ -1,5 +1,4 @@
 // electron/ipc/auth.js
-// electron/ipc/auth.js
 const { ipcMain } = require('electron');
 
 function setupAuthIPC() {

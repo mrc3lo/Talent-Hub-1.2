@@ -1,0 +1,23 @@
+[
+  {
+    "id": "init-1",
+    "monto": 1750,
+    "fecha": "2026-06-15",
+    "estado": "Pagado",
+    "country": "CHL"
+  },
+  {
+    "id": "init-2",
+    "monto": 2100,
+    "fecha": "2026-07-20",
+    "estado": "Pendiente",
+    "country": "CHL"
+  },
+  {
+    "id": "init-3",
+    "monto": 1900,
+    "fecha": "2026-06-01",
+    "estado": "Pagado",
+    "country": "ARG"
+  }
+]
