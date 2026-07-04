@@ -1,12 +1,11 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
-// 1. IMPORTAMOS TUS DOS MÓDULOS (Auth y Payroll)
-const { setupAuthIPC } = require('./ipc/auth.js');
-const { setupPayrollIPC } = require('./ipc/payroll.js');
+// 1. IMPORTAMOS TUS DOS MÓDULOS (Con la extensión .cjs correcta)
+const { setupAuthIPC } = require('./ipc/auth.cjs');
+const { setupPayrollIPC } = require('./ipc/payroll.cjs');
 
-// Simulación de controladores IPC para cada módulo (luego se separan en carpetas)
-// Aquí registramos el primer canal de ejemplo para el Integrante A (employee)
+// Simulación de controladores IPC para cada módulo
 ipcMain.handle('employee:getAll', async (event, args) => {
   console.log("Petición recibida en main.js: employee:getAll");
   return [
@@ -15,7 +14,7 @@ ipcMain.handle('employee:getAll', async (event, args) => {
   ]; 
 });
 
-// 2. CONECTAMOS TUS MÓDULOS AL PROCESO PRINCIPAL DE ELECTRON
+// 2. CONECTAMOS TUS MÓDULOS AL TABLERO PRINCIPAL
 setupAuthIPC(); 
 setupPayrollIPC(); 
 
@@ -24,14 +23,12 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      // Apunta al archivo preload.cjs para activar el puente
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false
     }
   });
 
-  // En desarrollo, Electron carga el servidor local de Vite
   mainWindow.loadURL('http://localhost:5173'); 
 }
 
