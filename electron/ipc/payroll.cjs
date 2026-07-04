@@ -1,26 +1,136 @@
-// electron/ipc/payroll.cjs
 const { ipcMain } = require('electron');
+const fs = require('fs');
+const path = require('path');
+
+// Ruta donde se guardará el archivo JSON en la carpeta del proyecto
+const DATA_FILE = path.join(__dirname, 'payroll_db.json');
+
+// Lista de países estática
+const ALL_COUNTRIES = [
+  { code: 'ARG', name: 'Argentina' },
+  { code: 'BOL', name: 'Bolivia' },
+  { code: 'BRA', name: 'Brasil' },
+  { code: 'CAN', name: 'Canadá' },
+  { code: 'CHL', name: 'Chile' },
+  { code: 'COL', name: 'Colombia' },
+  { code: 'CRI', name: 'Costa Rica' },
+  { code: 'ECU', name: 'Ecuador' },
+  { code: 'SLV', name: 'El Salvador' },
+  { code: 'ESP', name: 'España' },
+  { code: 'GTM', name: 'Guatemala' },
+  { code: 'HND', name: 'Honduras' },
+  { code: 'MEX', name: 'México' },
+  { code: 'NIC', name: 'Nicaragua' },
+  { code: 'PAN', name: 'Panamá' },
+  { code: 'PRY', name: 'Paraguay' },
+  { code: 'PER', name: 'Perú' },
+  { code: 'PRI', name: 'Puerto Rico' },
+  { code: 'URY', name: 'Uruguay' },
+  { code: 'USA', name: 'Estados Unidos' },
+  { code: 'VEN', name: 'Venezuela' }
+].sort((a, b) => a.name.localeCompare(b.name));
+
+// Función auxiliar para leer los datos del archivo JSON de forma segura
+function readDatabase() {
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      // Datos iniciales si el archivo no existe
+      const initialData = [
+        { id: 'init-1', monto: 1750, fecha: '2026-06-15', estado: 'Pagado', country: 'CHL' },
+        { id: 'init-2', monto: 2100, fecha: '2026-07-20', estado: 'Pendiente', country: 'CHL' },
+        { id: 'init-3', monto: 1900, fecha: '2026-06-01', estado: 'Pagado', country: 'ARG' }
+      ];
+      fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+      return initialData;
+    }
+    const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    console.error("Error leyendo la base de datos local:", error);
+    return [];
+  }
+}
+
+// Función auxiliar para escribir los datos en el archivo JSON
+function writeDatabase(data) {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error("Error escribiendo la base de datos local:", error);
+    return false;
+  }
+}
 
 function setupPayrollIPC() {
-  // Manejador para obtener todas las nóminas
+  
+  // Obtener todas las nóminas
   ipcMain.handle('nomina:getAll', async () => {
-    console.log("Petición recibida en payroll.cjs: nomina:getAll");
-    
-    // Datos consistentes con los empleados del sistema
-    return { 
-      success: true, 
-      data: [
-        { _id: 1, nombreEmpleado: "Juan Pérez", monto: 1500000 },
-        { _id: 2, nombreEmpleado: "María López", monto: 1200000 }
-      ] 
-    };
+    const db = readDatabase();
+    return { success: true, data: db };
   });
 
-  // Manejador para filtrar nóminas
-  ipcMain.handle('nomina:filter', async (event, criteria) => {
-    console.log("Filtrando nóminas con:", criteria);
-    // Lógica futura para filtrar en MongoDB
-    return { success: true, data: [] };
+  // Filtrar nóminas por país
+  ipcMain.handle('nomina:filter', async (event, countryCode) => {
+    try {
+      if (!countryCode) {
+        return { success: true, data: [] };
+      }
+      const db = readDatabase();
+      const filteredData = db.filter(item => item.country === countryCode);
+      return { success: true, data: filteredData };
+    } catch (error) {
+      console.error("Error al filtrar:", error);
+      return { success: false, data: [] };
+    }
+  });
+
+  // REGISTRAR NUEVA NÓMINA (Acción del Formulario con almacenamiento persistente)
+  ipcMain.handle('nomina:create', async (event, newNomina) => {
+    try {
+      console.log("Recibiendo nueva nómina en backend:", newNomina);
+      
+      // Validar datos básicos
+      if (!newNomina.country || !newNomina.monto || !newNomina.fecha) {
+        return { success: false, message: "Faltan datos requeridos." };
+      }
+
+      // Validar que el monto no sea negativo (Punto extra de robustez de datos)
+      if (parseFloat(newNomina.monto) <= 0) {
+        return { success: false, message: "El monto debe ser mayor a cero." };
+      }
+
+      // Determinar estado automáticamente según la fecha elegida (Comparado con Julio 2026)
+      const hoy = new Date('2026-07-04');
+      const fechaSeleccionada = new Date(newNomina.fecha);
+      const estadoCalculado = fechaSeleccionada > hoy ? 'Pendiente' : 'Pagado';
+
+      const registro = {
+        id: `dyn-${Date.now()}`,
+        monto: parseFloat(newNomina.monto),
+        fecha: newNomina.fecha,
+        estado: estadoCalculado,
+        country: newNomina.country
+      };
+
+      // Leemos el JSON actual, agregamos el registro y volvemos a guardar
+      const db = readDatabase();
+      db.push(registro);
+      writeDatabase(db);
+      
+      // Devolvemos la lista actualizada de ese país para refrescar la tabla de inmediato
+      const updatedList = db.filter(item => item.country === newNomina.country);
+      return { success: true, data: updatedList };
+
+    } catch (error) {
+      console.error("Error al crear nómina:", error);
+      return { success: false, message: "Error interno del servidor." };
+    }
+  });
+
+  // Retorna países
+  ipcMain.handle('nomina:getCountries', async () => {
+    return ALL_COUNTRIES;
   });
 }
 
