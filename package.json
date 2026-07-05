@@ -5,11 +5,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev:react": "vite",
-  "dev:electron": "wait-on http://localhost:5173 && electron .",
-  "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\""
+    "dev:react": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\""
   },
   "dependencies": {
+    "mongodb": "^7.4.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
