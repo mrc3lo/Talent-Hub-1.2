@@ -34,12 +34,8 @@ const ALL_COUNTRIES = [
 function readDatabase() {
   try {
     if (!fs.existsSync(DATA_FILE)) {
-      // Datos iniciales si el archivo no existe
-      const initialData = [
-        { id: 'init-1', monto: 1750, fecha: '2026-06-15', estado: 'Pagado', country: 'CHL' },
-        { id: 'init-2', monto: 2100, fecha: '2026-07-20', estado: 'Pendiente', country: 'CHL' },
-        { id: 'init-3', monto: 1900, fecha: '2026-06-01', estado: 'Pagado', country: 'ARG' }
-      ];
+      // Inicia vacío sin registros de prueba pre-cargados
+      const initialData = [];
       fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
       return initialData;
     }
@@ -85,31 +81,26 @@ function setupPayrollIPC() {
     }
   });
 
-  // REGISTRAR NUEVA NÓMINA (Acción del Formulario con almacenamiento persistente)
+  // REGISTRAR NUEVA NÓMINA (Recibe estado explícito desde el frontend)
   ipcMain.handle('nomina:create', async (event, newNomina) => {
     try {
       console.log("Recibiendo nueva nómina en backend:", newNomina);
       
-      // Validar datos básicos
-      if (!newNomina.country || !newNomina.monto || !newNomina.fecha) {
+      // Validar datos básicos incluyendo el nuevo campo de estado
+      if (!newNomina.country || !newNomina.monto || !newNomina.fecha || !newNomina.estado) {
         return { success: false, message: "Faltan datos requeridos." };
       }
 
-      // Validar que el monto no sea negativo (Punto extra de robustez de datos)
+      // Validar que el monto no sea negativo
       if (parseFloat(newNomina.monto) <= 0) {
         return { success: false, message: "El monto debe ser mayor a cero." };
       }
-
-      // Determinar estado automáticamente según la fecha elegida (Comparado con Julio 2026)
-      const hoy = new Date('2026-07-04');
-      const fechaSeleccionada = new Date(newNomina.fecha);
-      const estadoCalculado = fechaSeleccionada > hoy ? 'Pendiente' : 'Pagado';
 
       const registro = {
         id: `dyn-${Date.now()}`,
         monto: parseFloat(newNomina.monto),
         fecha: newNomina.fecha,
-        estado: estadoCalculado,
+        estado: newNomina.estado, // Toma 'Pendiente' o 'Pagado' directamente del cliente
         country: newNomina.country
       };
 

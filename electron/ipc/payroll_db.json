@@ -19,5 +19,26 @@
     "fecha": "2026-06-01",
     "estado": "Pagado",
     "country": "ARG"
+  },
+  {
+    "id": "dyn-1783208569247",
+    "monto": 2500,
+    "fecha": "2026-03-12",
+    "estado": "Pagado",
+    "country": "BRA"
+  },
+  {
+    "id": "dyn-1783208610147",
+    "monto": 2500,
+    "fecha": "2026-07-05",
+    "estado": "Pendiente",
+    "country": "BRA"
+  },
+  {
+    "id": "dyn-1783209571638",
+    "monto": 2500,
+    "fecha": "2025-06-12",
+    "estado": "Pendiente",
+    "country": "CHL"
   }
 ]

@@ -11,6 +11,7 @@ export default function PayrollPage() {
   // Estados para el formulario de nueva nómina
   const [formMonto, setFormMonto] = useState('');
   const [formFecha, setFormFecha] = useState('');
+  const [formEstado, setFormEstado] = useState('Pendiente'); // NUEVO: Estado manual por defecto
   const [formMessage, setFormMessage] = useState('');
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function PayrollPage() {
     // Limpiar formulario al cambiar de país
     setFormMonto('');
     setFormFecha('');
+    setFormEstado('Pendiente'); // Resetear estado manual al valor por defecto
 
     if (countryCode) {
       const filteredData = await payrollService.getNominaByCountry(countryCode);
@@ -49,7 +51,7 @@ export default function PayrollPage() {
     e.preventDefault();
     setFormMessage('');
 
-    if (!formMonto || !formFecha) {
+    if (!formMonto || !formFecha || !formEstado) {
       setFormMessage('Por favor, rellene todos los campos del formulario.');
       return;
     }
@@ -57,7 +59,8 @@ export default function PayrollPage() {
     const payload = {
       country: selectedCountry,
       monto: formMonto,
-      fecha: formFecha
+      fecha: formFecha,
+      estado: formEstado // NUEVO: Envío del estado seleccionado manualmente
     };
 
     const response = await payrollService.createNomina(payload);
@@ -66,6 +69,7 @@ export default function PayrollPage() {
       setPayrolls(response.data); // El backend nos devuelve la lista actualizada del país
       setFormMonto('');
       setFormFecha('');
+      setFormEstado('Pendiente'); // Limpiar selector manual al valor por defecto
       setFormMessage('Nómina registrada exitosamente.');
     } else {
       setFormMessage('Hubo un error al registrar la nómina.');
@@ -108,7 +112,7 @@ export default function PayrollPage() {
       ) : (
         <div style={{ display: 'flex', gap: '30px', marginTop: '20px' }}>
           
-          {/* LADO IZQUIERDO: Formulario de Registro (Opción B) */}
+          {/* LADO IZQUIERDO: Formulario de Registro */}
           <div style={{ flex: '1', padding: '20px', border: '1px solid #dee2e6', borderRadius: '6px', backgroundColor: '#fff' }}>
             <h4 style={{ marginTop: 0, marginBottom: '15px' }}>Registrar Nueva Nómina</h4>
             
@@ -124,7 +128,7 @@ export default function PayrollPage() {
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div style={{ marginBottom: '12px' }}>
                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '13px' }}>Fecha de Cierre:</label>
                 <input 
                   type="date" 
@@ -132,6 +136,19 @@ export default function PayrollPage() {
                   onChange={(e) => setFormFecha(e.target.value)}
                   style={{ width: '100%', padding: '6px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
+              </div>
+
+              {/* NUEVO: Campo Selector de Estado Manual */}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '13px' }}>Estado Inicial:</label>
+                <select 
+                  value={formEstado}
+                  onChange={(e) => setFormEstado(e.target.value)}
+                  style={{ width: '100%', padding: '6px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', fontSize: '14px' }}
+                >
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Pagado">Pagado</option>
+                </select>
               </div>
 
               <button type="submit" style={{ width: '100%', padding: '8px', backgroundColor: '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>
@@ -160,7 +177,7 @@ export default function PayrollPage() {
               <tbody>
                 {payrolls.length === 0 ? (
                   <tr>
-                    <td colSpan="3" style={{ padding: '20px', textAlign: 'center', color: '#6c757d', italic: 'true' }}>
+                    <td colSpan="3" style={{ padding: '20px', textAlign: 'center', color: '#6c757d', fontStyle: 'italic' }}>
                       No existen registros previos para este país. ¡Cree el primero!
                     </td>
                   </tr>
