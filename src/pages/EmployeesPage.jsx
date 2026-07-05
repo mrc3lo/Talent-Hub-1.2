@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { employeeService } from '../services/employeeService';
-// Importamos los componentes según tu arquitectura de archivos
 import SearchBar from '../components/SearchBar';
 import DepartmentFilter from '../components/DepartmentFilter';
 import EmployeeTable from '../components/EmployeeTable';
 
-export default function EmployeesPage() {
+export default function EmployeesPage({ onViewProfile }) { // ← Recibe la propiedad aquí
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar todos los empleados
   const loadEmployees = async () => {
     setLoading(true);
     try {
@@ -26,13 +24,11 @@ export default function EmployeesPage() {
     loadEmployees();
   }, []);
 
-  // Manejador para la búsqueda (Paso 4 del flujo de trabajo)
   const handleSearch = async (query) => {
     if (!query.trim()) {
-      loadEmployees(); // Si limpia el buscador, recargamos todos
+      loadEmployees();
       return;
     }
-    
     try {
       const data = await employeeService.search(query);
       setEmployees(data);
@@ -41,9 +37,7 @@ export default function EmployeesPage() {
     }
   };
 
-  // Manejador para el filtro de departamentos (Próximo paso)
   const handleFilterChange = (departmentId) => {
-    // Aquí puedes aplicar lógica de filtrado en el estado o crear un IPC dedicado
     console.log("Filtrar por departamento:", departmentId);
   };
 
@@ -51,17 +45,21 @@ export default function EmployeesPage() {
     <div style={{ padding: '20px' }}>
       <h1>Directorio de Empleados</h1>
       
-      {/* Contenedor de filtros */}
       <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
         <SearchBar onSearch={handleSearch} />
         <DepartmentFilter onFilterChange={handleFilterChange} />
       </div>
 
-      {/* Tabla de datos que reemplaza a la lista <ul> */}
       {loading ? (
         <p>Cargando empleados...</p>
       ) : (
-        <EmployeeTable employees={employees} />
+        <EmployeeTable 
+          employees={employees} 
+          onViewProfile={(id) => {
+            console.log("2. Recibido en EmployeesPage. Enviando a App.jsx:", id);
+            onViewProfile(id);
+          }} 
+        /> // ← Se la pasa a la tabla
       )}
     </div>
   );

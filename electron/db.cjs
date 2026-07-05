@@ -5,7 +5,7 @@ const client = new MongoClient(uri);
 
 let dbConection = null;
 
-async function conectDB() {
+async function connectDB() {
     if (dbConection) return dbConection;
 
     try {
@@ -19,4 +19,4 @@ async function conectDB() {
         throw error;
     }
 }
-module.exports = { conectDB };
+module.exports = { connectDB };

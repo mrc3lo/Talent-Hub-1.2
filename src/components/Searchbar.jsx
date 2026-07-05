@@ -4,7 +4,7 @@ export default function SearchBar({ onSearch }) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita que la página se recargue y quede en blanco
     onSearch(query);
   };
 
@@ -32,7 +32,9 @@ export default function SearchBar({ onSearch }) {
           borderRadius: '4px',
           cursor: 'pointer'
         }}
-      />
+      >
+        Buscar
+      </button>
     </form>
   );
 }
