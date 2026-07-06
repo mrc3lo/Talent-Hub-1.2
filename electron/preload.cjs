@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld('api', {
     getAll: () => ipcRenderer.invoke('candidate:getAll'),
     updateStatus: (data) => ipcRenderer.invoke('candidate:updateStatus', data),
     create: (data) => ipcRenderer.invoke('candidate:create', data) // <-- Nueva ruta agregada
-    
+  },
+
+  // (Dominio 3)
   payroll: {
     getAll: () => ipcRenderer.invoke('nomina:getAll'),
     filter: (criteria) => ipcRenderer.invoke('nomina:filter', criteria),
