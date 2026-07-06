@@ -30,9 +30,9 @@ export const RecruitmentPage = () => {
       )
     );
 
-    // 2. Aquí preparas la conexión con el Backend (Electron/MongoDB)
+    // 2. Aquí se prepara la conexión con el Backend (Electron/MongoDB)
     try {
-      // Cuando tengas el update listo en tu Service, descomentas esta línea:
+      // Cuando tengas el update listo en tu Service, descomentar esta línea:
       // await candidateService.updateStatus(candidateId, newStatus);
       console.log(`Exito: Candidato ${candidateId} movido a la fase '${newStatus}'`);
     } catch (error) {

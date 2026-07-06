@@ -29,13 +29,17 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-  // Importamos el archivo de Reclutamiento de forma dinámica
+  // 1. Importamos y conectamos la base de datos PRIMERO
+  const { connectDB } = await import('./db.js');
+  await connectDB();
+
+  // 2. Importamos el archivo de Reclutamiento de forma dinámica
   const { setupCandidateIPC } = await import('./ipc/candidate.js');
   
-  // Se ejecutamos
+  // 3. Lo ejecutamos para que escuche al frontend
   setupCandidateIPC();
 
-  // Creamos la ventana
+  // 4. Creamos la ventana
   createWindow();
 
   app.on('activate', () => {
