@@ -1,3 +1,5 @@
+console.log("--- El preload.cjs se ha cargado correctamente ---");
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
@@ -13,5 +15,11 @@ contextBridge.exposeInMainWorld('api', {
     getAll: () => ipcRenderer.invoke('candidate:getAll'),
     updateStatus: (data) => ipcRenderer.invoke('candidate:updateStatus', data),
     create: (data) => ipcRenderer.invoke('candidate:create', data) // <-- Nueva ruta agregada
+    
+  payroll: {
+    getAll: () => ipcRenderer.invoke('nomina:getAll'),
+    filter: (criteria) => ipcRenderer.invoke('nomina:filter', criteria),
+    getCountries: () => ipcRenderer.invoke('nomina:getCountries'),
+    create: (nominaData) => ipcRenderer.invoke('nomina:create', nominaData) // <- Con esta línea solucionamos el error de guardado
   }
 });
