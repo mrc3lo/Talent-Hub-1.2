@@ -25,7 +25,7 @@ export function setupCandidateIPC() {
     }
   });
 
-// Canal para guardar un nuevo candidato
+  // Canal para guardar un nuevo candidato
   ipcMain.handle('candidate:create', async (event, candidateData) => {
     try {
       const db = getDb();
@@ -44,6 +44,24 @@ export function setupCandidateIPC() {
       };
     } catch (error) {
       console.error("Error al crear candidato en Mongo:", error);
+      return { success: false };
+    }
+  });
+
+  // --- Canal para actualizar el estado (Drag y Drop) ---
+  ipcMain.handle('candidate:updateStatus', async (event, data) => {
+    try {
+      const db = getDb();
+      const { id, newStatus } = data;
+      
+      await db.collection('candidatos').updateOne(
+        { _id: new ObjectId(id) }, // Buscamos al candidato por su ID de Mongo
+        { $set: { estado: newStatus } } // Actualizamos su columna
+      );
+      
+      return { success: true };
+    } catch (error) {
+      console.error("Error al actualizar estado en Mongo:", error);
       return { success: false };
     }
   });
