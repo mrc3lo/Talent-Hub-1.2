@@ -4,22 +4,44 @@ const { ObjectId } = require('mongodb');
 
 function initEmployeeIPC() {
   // 1. Obtener todos los empleados de MongoDB
-  ipcMain.handle('employee:getAll', async () => {
-    try {
-      const db = await connectDB();
-      const empleados = await db.collection('empleados').find({}).toArray();
-      
-      return empleados.map(emp => ({
-        id: emp._id.toString(), // Convertimos el ObjectId de Mongo a String para React
+ipcMain.handle('employee:getAll', async () => {
+  try {
+    const db = await connectDB();
+    
+    // Hacemos el Lookup con la propiedad nativa correcta
+    const empleadosConDept = await db.collection('empleados').aggregate([
+      {
+        $lookup: {
+          from: 'departamentos',
+          localField: 'departamento_id',
+          foreignField: '_id',
+          as: 'deptInfo'
+        }
+      },
+      {
+        $unwind: {
+          path: '$deptInfo',
+          preserveNullAndEmptyArrays: true // ← 💡 ¡Corregido aquí!
+        }
+      }
+    ]).toArray();
+    
+    return empleadosConDept.map(emp => {
+      const idString = emp._id ? emp._id.toString() : '';
+      return {
+        id: idString,
+        _id: idString, 
         nombre: emp.nombre,
         cedula: emp.cedula,
-        estado: emp.estado
-      }));
-    } catch (error) {
-      console.error("Error en IPC employee:getAll:", error);
-      return [];
-    }
-  });
+        estado: emp.estado,
+        departamento: emp.deptInfo ? emp.deptInfo.nombre : 'Sin Área'
+      };
+    });
+  } catch (error) {
+    console.error("Error en IPC employee:getAll:", error);
+    return [];
+  }
+});
 
   // 2. Buscar empleados por expresión regular
   ipcMain.handle('employee:search', async (event, query) => {
