@@ -25,21 +25,25 @@ export function setupCandidateIPC() {
     }
   });
 
-  // Canal para actualizar la columna (estado) directo en la BD
-  ipcMain.handle('candidate:updateStatus', async (event, { id, newStatus }) => {
+// Canal para guardar un nuevo candidato
+  ipcMain.handle('candidate:create', async (event, candidateData) => {
     try {
       const db = getDb();
-      console.log(`Actualizando candidato ${id} a estado: ${newStatus}`);
+      console.log("Guardando nuevo candidato:", candidateData);
       
-      // Hacemos el update filtrando por el ID del candidato que arrastramos
-      const resultado = await db.collection('candidatos').updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { estado: newStatus } }
-      );
+      // Insertamos el documento. Por defecto entrará a la columna de "Nuevas Postulaciones"
+      const resultado = await db.collection('candidatos').insertOne({
+        nombre: candidateData.nombre,
+        puesto: candidateData.puesto,
+        estado: 'postulado' // Todas las postulaciones nuevas entran en esta columna
+      });
       
-      return { success: resultado.modifiedCount > 0 };
+      return { 
+        success: true, 
+        id: resultado.insertedId.toString() 
+      };
     } catch (error) {
-      console.error("Error actualizando estado en Mongo:", error);
+      console.error("Error al crear candidato en Mongo:", error);
       return { success: false };
     }
   });

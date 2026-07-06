@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-  //(Dominio 1)
+  // (Dominio 1)
   employee: {
     getAll: (args) => ipcRenderer.invoke('employee:getAll', args),
     getById: (id) => ipcRenderer.invoke('employee:getById', id),
@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('api', {
   // (Dominio 2)
   candidate: {
     getAll: () => ipcRenderer.invoke('candidate:getAll'),
-    updateStatus: (data) => ipcRenderer.invoke('candidate:updateStatus', data)
+    updateStatus: (data) => ipcRenderer.invoke('candidate:updateStatus', data),
+    create: (data) => ipcRenderer.invoke('candidate:create', data) // <-- Nueva ruta agregada
   }
 });

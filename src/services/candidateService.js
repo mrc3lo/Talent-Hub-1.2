@@ -20,6 +20,16 @@ export const candidateService = {
       console.error("Error al actualizar el estado del candidato:", error);
       throw error;
     }
+  },
+
+  // Guardar un nuevo postulante
+  create: async (candidateData) => {
+    try {
+      const result = await window.api.candidate.create(candidateData);
+      return result;
+    } catch (error) {
+      console.error("Error al crear el candidato:", error);
+      throw error;
+    }
   }
-  
 };

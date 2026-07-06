@@ -5,22 +5,24 @@ import { KanbanBoard } from '../components/KanbanBoard';
 export const RecruitmentPage = () => {
   const [candidates, setCandidates] = useState([]);
 
-  useEffect(() => {
-    const loadCandidates = async () => {
-      try {
-        const data = await candidateService.getAll();
-        setCandidates(data);
-      } catch (error) {
-        console.error("Falló la carga de candidatos:", error);
-      }
-    };
+  // 1. Movemos loadCandidates afuera para poder reutilizarla
+  const loadCandidates = async () => {
+    try {
+      const data = await candidateService.getAll();
+      setCandidates(data);
+    } catch (error) {
+      console.error("Falló la carga de candidatos:", error);
+    }
+  };
 
+  // Se ejecuta una sola vez al montar el componente
+  useEffect(() => {
     loadCandidates();
   }, []);
 
   // Función que se ejecuta al soltar la tarjeta en una nueva columna
   const handleStatusChange = async (candidateId, newStatus) => {
-    // 1. Actualización visual instantánea en React
+    // Actualización visual instantánea en React
     setCandidates(prevCandidates => 
       prevCandidates.map(c => 
         // Comparamos usando == por si el ID viene como texto o número
@@ -30,10 +32,10 @@ export const RecruitmentPage = () => {
       )
     );
 
-    // 2. Aquí se prepara la conexión con el Backend (Electron/MongoDB)
+    // Conexión con el Backend (Electron/MongoDB)
     try {
-      // Cuando tengas el update listo en tu Service, descomentar esta línea:
-      // await candidateService.updateStatus(candidateId, newStatus);
+      // 2. ¡Línea descomentada! Ahora esto impactará directamente en MongoDB
+      await candidateService.updateStatus(candidateId, newStatus);
       console.log(`Exito: Candidato ${candidateId} movido a la fase '${newStatus}'`);
     } catch (error) {
       console.error("Error al actualizar en la base de datos:", error);
@@ -47,10 +49,11 @@ export const RecruitmentPage = () => {
         Total de postulantes activos: <strong>{candidates.length}</strong>
       </p>
       
-      {/* Le pasamos la nueva función al tablero */}
+      {/* 3. Pasamos loadCandidates al prop onRefresh */}
       <KanbanBoard 
         candidates={candidates} 
         onStatusChange={handleStatusChange} 
+        onRefresh={loadCandidates} 
       />
     </div>
   );
