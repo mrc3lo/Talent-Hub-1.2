@@ -32,14 +32,21 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:5173'); 
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // 1. Importamos y conectamos la base de datos PRIMERO
+  const { connectDB } = await import('./db.js');
+  await connectDB();
+
+  // 2. Importamos el archivo de Reclutamiento de forma dinámica
+  const { setupCandidateIPC } = await import('./ipc/candidate.js');
+  
+  // 3. Lo ejecutamos para que escuche al frontend
+  setupCandidateIPC();
+
+  // 4. Creamos la ventana
   createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
 });
