@@ -1,62 +1,168 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 
-const LoginPage = ({ onLoginSuccess }) => {
+export default function LoginPage({ onLoginSuccess }) {
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleLogin = (e) => {
+  // Nuevo estado para la confirmación interactiva en el botón sin usar ventanas nativas
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setMessage('');
+    setIsSuccess(false);
 
-    // Limpiamos el texto ingresado para evitar fallas por espacios o mayúsculas
-    const cleanUsername = username.trim().toLowerCase();
-    const cleanPassword = password.trim();
+    if (!username || !password) {
+      setMessage('Por favor, complete todos los campos.');
+      return;
+    }
 
-    // Validación ultra segura que acepta tanto el identificador como el correo simulado
-    if (
-      (cleanUsername === 'admin') && 
-      cleanPassword === 'admin123'
-    ) {
-      onLoginSuccess(); 
+    if (isRegisterMode) {
+      try {
+        const response = await window.api.invoke('auth:register', { username, password });
+        setMessage(response.message);
+        setIsSuccess(response.success);
+        
+        if (response.success) {
+          setUsername('');
+          setPassword('');
+        }
+      } catch (error) {
+        setMessage('Error al intentar registrar el usuario.');
+      }
     } else {
-      setError('Usuario o contraseña incorrectos.');
+      try {
+        const response = await window.api.invoke('auth:login', { username, password });
+        setIsSuccess(response.success);
+        setMessage(response.message);
+        if (response.success) {
+          onLoginSuccess();
+        }
+      } catch (error) {
+        setMessage('Error al intentar iniciar sesión.');
+      }
+    }
+  };
+
+  const handleEliminarCuenta = async (e) => {
+    e.preventDefault();
+    setMessage('');
+
+    if (!username) {
+      setMessage('Escribe el correo en el campo de arriba para poder borrarlo.');
+      setIsSuccess(false);
+      setIsConfirmingDelete(false);
+      return;
+    }
+
+    // Primer clic: Activa el modo de confirmación visual en el botón
+    if (!isConfirmingDelete) {
+      setIsConfirmingDelete(true);
+      return;
+    }
+
+    // Segundo clic: Ejecuta la acción directamente sin congelar los hilos de Electron
+    try {
+      const response = await window.api.invoke('auth:delete', { username });
+      setIsSuccess(response.success);
+      setMessage(response.message);
+      
+      // Limpieza segura de estados
+      setUsername('');
+      setPassword('');
+      setIsConfirmingDelete(false);
+    } catch (error) {
+      setMessage('Error al intentar eliminar el usuario.');
+      setIsSuccess(false);
+      setIsConfirmingDelete(false);
     }
   };
 
   return (
-    <div style={{ padding: '50px', textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
-      <h1>Login - TalentHub</h1>
-      
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="text" 
-            placeholder="Usuario" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            required 
-            style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
-          />
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#f4f6f9' }}>
+      <div style={{ padding: '30px', width: '100%', maxWidth: '360px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ textAlign: 'center', marginTop: 0, color: '#333' }}>
+          {isRegisterMode ? 'Crear Cuenta' : 'TalentHub Login'}
+        </h2>
+        
+        <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '13px' }}>Correo Electrónico:</label>
+            <input 
+              type="text" 
+              placeholder="ejemplo@correo.com" 
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (isConfirmingDelete) setIsConfirmingDelete(false); // Resetea si cambia el texto
+              }}
+              style={{ width: '100%', padding: '8px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', color: '#000' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '13px' }}>Contraseña:</label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ width: '100%', padding: '8px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', color: '#000' }}
+            />
+          </div>
+
+          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: isRegisterMode ? '#198754' : '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}>
+            {isRegisterMode ? 'Registrar Usuario' : 'Iniciar Sesión'}
+          </button>
+
+          {/* Botón dinámico con confirmación integrada */}
+          {!isRegisterMode && (
+            <button 
+              type="button"
+              onClick={handleEliminarCuenta} 
+              style={{ 
+                width: '100%', 
+                padding: '8px', 
+                backgroundColor: isConfirmingDelete ? '#dc3545' : '#fff', 
+                color: isConfirmingDelete ? '#fff' : '#dc3545', 
+                border: '1px solid #dc3545', 
+                borderRadius: '4px', 
+                fontWeight: 'bold', 
+                fontSize: '12px', 
+                cursor: 'pointer',
+                transition: 'background-color 0.2s, color 0.2s'
+              }}
+            >
+              {isConfirmingDelete ? '⚠️ ¿Seguro? Haz clic de nuevo para borrar' : '🗑️ Borrar esta cuenta del Sistema'}
+            </button>
+          )}
+        </form>
+
+        {message && (
+          <div style={{ marginTop: '15px', padding: '10px', fontSize: '13px', borderRadius: '4px', backgroundColor: isSuccess ? '#d1e7dd' : '#f8d7da', color: isSuccess ? '#0f5132' : '#842029', textAlign: 'center' }}>
+            {message}
+          </div>
+        )}
+
+        <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'center', fontSize: '13px' }}>
+          <span 
+            onClick={() => { 
+              setIsRegisterMode(!isRegisterMode); 
+              setMessage(''); 
+              setIsSuccess(false); 
+              setUsername(''); 
+              setPassword(''); 
+              setIsConfirmingDelete(false);
+            }} 
+            style={{ color: '#0d6efd', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            {isRegisterMode ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí'}
+          </span>
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-            style={{ padding: '8px', width: '100%', boxSizing: 'border-box' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Ingresar
-        </button>
-      </form>
-      {error && <p style={{ color: 'red', marginTop: '15px', fontWeight: 'bold' }}>{error}</p>}
+      </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

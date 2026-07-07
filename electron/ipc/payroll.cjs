@@ -30,24 +30,40 @@ const ALL_COUNTRIES = [
   { code: 'VEN', name: 'Venezuela' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
-// Función auxiliar para leer los datos del archivo JSON de forma segura
 function readDatabase() {
   try {
     if (!fs.existsSync(DATA_FILE)) {
-      // Inicia vacío sin registros de prueba pre-cargados
-      const initialData = [];
+      const initialData = [
+        {
+          id: "init-1",
+          empleado: "Matías Carrasco",
+          mes: "Julio",
+          ano: "2026",
+          salarioBase: 1000000,
+          bonos: 150000,
+          descuentos: 50000,
+          monto: 1100000,
+          fecha: "2026-07-06",
+          estado: "Pendiente",
+          country: "USA"
+        }
+      ];
       fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
       return initialData;
     }
     const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
-    return JSON.parse(fileContent);
+    const parsedData = JSON.parse(fileContent);
+    
+    if (Array.isArray(parsedData)) {
+      return parsedData.filter(item => item && item.empleado && item.empleado.trim() !== "");
+    }
+    return [];
   } catch (error) {
     console.error("Error leyendo la base de datos local:", error);
     return [];
   }
 }
 
-// Función auxiliar para escribir los datos en el archivo JSON
 function writeDatabase(data) {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
@@ -60,66 +76,64 @@ function writeDatabase(data) {
 
 function setupPayrollIPC() {
   
-  // Obtener todas las nóminas
   ipcMain.handle('nomina:getAll', async () => {
     const db = readDatabase();
     return { success: true, data: db };
   });
 
-  // Filtrar nóminas por país
-  ipcMain.handle('nomina:filter', async (event, countryCode) => {
+  ipcMain.handle('nomina:filterAdvanced', async (event, { mes, ano }) => {
     try {
-      if (!countryCode) {
-        return { success: true, data: [] };
-      }
-      const db = readDatabase();
-      const filteredData = db.filter(item => item.country === countryCode);
-      return { success: true, data: filteredData };
+      let db = readDatabase();
+      if (mes && mes !== 'Todos') db = db.filter(item => item.mes === mes);
+      if (ano && ano !== 'Todos') db = db.filter(item => item.ano === ano);
+      return { success: true, data: db };
     } catch (error) {
-      console.error("Error al filtrar:", error);
       return { success: false, data: [] };
     }
   });
 
-  // REGISTRAR NUEVA NÓMINA (Recibe estado explícito desde el frontend)
   ipcMain.handle('nomina:create', async (event, newNomina) => {
     try {
-      console.log("Recibiendo nueva nómina en backend:", newNomina);
-      
-      // Validar datos básicos incluyendo el nuevo campo de estado
-      if (!newNomina.country || !newNomina.monto || !newNomina.fecha || !newNomina.estado) {
-        return { success: false, message: "Faltan datos requeridos." };
-      }
-
-      // Validar que el monto no sea negativo
-      if (parseFloat(newNomina.monto) <= 0) {
-        return { success: false, message: "El monto debe ser mayor a cero." };
-      }
+      const salarioBase = parseFloat(newNomina.salarioBase || 0);
+      const bonos = parseFloat(newNomina.bonos || 0);
+      const descuentos = parseFloat(newNomina.descuentos || 0);
+      const neto = salarioBase + bonos - descuentos;
 
       const registro = {
         id: `dyn-${Date.now()}`,
-        monto: parseFloat(newNomina.monto),
+        empleado: newNomina.empleado,
+        mes: newNomina.mes,
+        ano: newNomina.ano,
+        salarioBase: salarioBase,
+        bonos: bonos,
+        descuentos: descuentos,
+        monto: neto,
         fecha: newNomina.fecha,
-        estado: newNomina.estado, // Toma 'Pendiente' o 'Pagado' directamente del cliente
+        estado: newNomina.estado, 
         country: newNomina.country
       };
 
-      // Leemos el JSON actual, agregamos el registro y volvemos a guardar
       const db = readDatabase();
       db.push(registro);
       writeDatabase(db);
-      
-      // Devolvemos la lista actualizada de ese país para refrescar la tabla de inmediato
-      const updatedList = db.filter(item => item.country === newNomina.country);
-      return { success: true, data: updatedList };
-
+      return { success: true, data: db };
     } catch (error) {
-      console.error("Error al crear nómina:", error);
-      return { success: false, message: "Error interno del servidor." };
+      return { success: false, message: "Error interno al crear." };
     }
   });
 
-  // Retorna países
+  // NUEVO INTERCEPTOR PARA ELIMINAR REGISTROS
+  ipcMain.handle('nomina:delete', async (event, id) => {
+    try {
+      let db = readDatabase();
+      db = db.filter(item => item.id !== id);
+      writeDatabase(db);
+      return { success: true, data: db };
+    } catch (error) {
+      return { success: false, message: "Error al eliminar el registro." };
+    }
+  });
+
   ipcMain.handle('nomina:getCountries', async () => {
     return ALL_COUNTRIES;
   });
