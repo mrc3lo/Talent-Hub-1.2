@@ -1,20 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { employeeService } from '../services/employeeService';
-// Importamos los componentes según tu arquitectura de archivos
 import SearchBar from '../components/SearchBar';
 import DepartmentFilter from '../components/DepartmentFilter';
 import EmployeeTable from '../components/EmployeeTable';
 
-export default function EmployeesPage() {
-  const [employees, setEmployees] = useState([]);
+export default function EmployeesPage({ onViewProfile }) {
+  const [allEmployees, setAllEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [departments, setDepartments] = useState([]); // 💡 Nuevo: Lista de departamentos únicos de la BD
   const [loading, setLoading] = useState(true);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDept, setSelectedDept] = useState('');
 
-  // Función para cargar todos los empleados
   const loadEmployees = async () => {
     setLoading(true);
     try {
       const data = await employeeService.getAll();
-      setEmployees(data);
+      setAllEmployees(data);
+      setFilteredEmployees(data);
+      
+      // 💡 EXTRAER DEPARTAMENTOS ÚNICOS: 
+      // Mapeamos los departamentos de los empleados, limpiamos espacios/nulos y eliminamos duplicados
+      const deptsUnicos = [
+        ...new Set(
+          data
+            .map(emp => emp.departamento || emp.puesto || '')
+            .filter(dept => dept.trim() !== '')
+        )
+      ];
+      setDepartments(deptsUnicos);
+
     } catch (error) {
       console.error("Error cargando empleados:", error);
     } finally {
@@ -26,42 +42,52 @@ export default function EmployeesPage() {
     loadEmployees();
   }, []);
 
-  // Manejador para la búsqueda (Paso 4 del flujo de trabajo)
-  const handleSearch = async (query) => {
-    if (!query.trim()) {
-      loadEmployees(); // Si limpia el buscador, recargamos todos
-      return;
+  const aplicarFiltrosCombinados = (busqueda, departamento) => {
+    let resultado = [...allEmployees];
+
+    if (busqueda.trim()) {
+      resultado = resultado.filter(emp => 
+        emp.nombre.toLowerCase().includes(busqueda.toLowerCase())
+      );
     }
-    
-    try {
-      const data = await employeeService.search(query);
-      setEmployees(data);
-    } catch (error) {
-      console.error("Error en la búsqueda:", error);
+
+    if (departamento) {
+      resultado = resultado.filter(emp => {
+        const valorDept = emp.departamento || emp.puesto || '';
+        return String(valorDept).toLowerCase() === String(departamento).toLowerCase();
+      });
     }
+
+    setFilteredEmployees(resultado);
   };
 
-  // Manejador para el filtro de departamentos (Próximo paso)
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    aplicarFiltrosCombinados(query, selectedDept);
+  };
+
   const handleFilterChange = (departmentId) => {
-    // Aquí puedes aplicar lógica de filtrado en el estado o crear un IPC dedicado
-    console.log("Filtrar por departamento:", departmentId);
+    setSelectedDept(departmentId);
+    aplicarFiltrosCombinados(searchQuery, departmentId);
   };
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>Directorio de Empleados</h1>
       
-      {/* Contenedor de filtros */}
       <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
         <SearchBar onSearch={handleSearch} />
-        <DepartmentFilter onFilterChange={handleFilterChange} />
+        {/* 💡 Le pasamos la lista dinámica de departamentos al componente */}
+        <DepartmentFilter 
+          departments={departments} 
+          onFilterChange={handleFilterChange} 
+        />
       </div>
 
-      {/* Tabla de datos que reemplaza a la lista <ul> */}
       {loading ? (
         <p>Cargando empleados...</p>
       ) : (
-        <EmployeeTable employees={employees} />
+        <EmployeeTable employees={filteredEmployees} onViewProfile={onViewProfile} />
       )}
     </div>
   );

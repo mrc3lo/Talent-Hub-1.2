@@ -1,48 +1,51 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron'); // 💡 Asegúrate de que ipcMain esté aquí si se usa arriba
 const path = require('path');
 
-// Simulación de controladores IPC para cada módulo (luego se separan en carpetas)
-// Aquí registramos el primer canal de ejemplo para el Integrante A (employee)
-ipcMain.handle('employee:getAll', async (event, args) => {
-  // Aquí irá la lógica de MongoDB: return await db.collection('empleados').find().toArray();
-  console.log("Petición recibida en main.js: employee:getAll");
-  return [
-    { id: 1, nombre: "Juan Pérez", puesto: "Desarrollador" },
-    { id: 2, nombre: "María López", puesto: "Diseñadora" }
-  ]; // Datos de prueba idénticos al flujo de tu arquitectura
-});
+// 👥 IMPORTACIÓN DOMINIO 1: Tu controlador modular de MongoDB
+const { initEmployeeIPC } = require('./ipc/employee.cjs'); 
+
+// 🔐💰 IMPORTACIÓN DOMINIO 3 Y NÓMINA: Controladores en CommonJS (.cjs)
+const { setupAuthIPC } = require('./ipc/auth.cjs');
+const { setupPayrollIPC } = require('./ipc/payroll.cjs');
+
+// CONECTAMOS LOS MÓDULOS AL TABLERO PRINCIPAL (Antes de que la app esté lista)
+setupAuthIPC(); 
+setupPayrollIPC(); 
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      // Apunta al archivo preload.js para activar el puente
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: path.join(__dirname, 'preload.cjs'), // Mantiene tu puente seguro unificado
       contextIsolation: true,
       nodeIntegration: false
     }
   });
 
-  // En desarrollo, Electron carga el servidor local de Vite
   mainWindow.loadURL('http://localhost:5173'); 
 }
 
 app.whenReady().then(async () => {
-  // 1. Importamos y conectamos la base de datos PRIMERO
+  // 1. Conectamos la base de datos PRIMERO (Traído desde main)
   const { connectDB } = await import('./db.js');
   await connectDB();
 
-  // 2. Importamos el archivo de Reclutamiento de forma dinámica
+  // 2. Inicializa tus canales de MongoDB (getAll, search, getProfileData)
+  initEmployeeIPC();
+
+  // 3. Importamos y ejecutamos Reclutamiento (Dominio 2) de forma dinámica
   const { setupCandidateIPC } = await import('./ipc/candidate.js');
-  
-  // 3. Lo ejecutamos para que escuche al frontend
   setupCandidateIPC();
 
-  // 4. Creamos la ventana
+  // 4. Creamos la ventana de la aplicación
   createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
