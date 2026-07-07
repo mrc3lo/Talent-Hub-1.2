@@ -5,87 +5,79 @@ import DepartmentFilter from '../components/DepartmentFilter';
 import EmployeeTable from '../components/EmployeeTable';
 
 export default function EmployeesPage({ onViewProfile }) {
-  const [allEmployees, setAllEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-  const [departments, setDepartments] = useState([]); // 💡 Nuevo: Lista de departamentos únicos de la BD
+  const [departments, setDepartments] = useState([]); 
   const [loading, setLoading] = useState(true);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
 
-  const loadEmployees = async () => {
-    setLoading(true);
-    try {
-      const data = await employeeService.getAll();
-      setAllEmployees(data);
-      setFilteredEmployees(data);
-      
-      // 💡 EXTRAER DEPARTAMENTOS ÚNICOS: 
-      // Mapeamos los departamentos de los empleados, limpiamos espacios/nulos y eliminamos duplicados
-      const deptsUnicos = [
-        ...new Set(
-          data
-            .map(emp => emp.departamento || emp.puesto || '')
-            .filter(dept => dept.trim() !== '')
-        )
-      ];
-      setDepartments(deptsUnicos);
-
-    } catch (error) {
-      console.error("Error cargando empleados:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Cargar departamentos únicos al inicio
   useEffect(() => {
-    loadEmployees();
+    async function loadInitialDepartments() {
+      try {
+        const data = await employeeService.getAll();
+        const deptsUnicos = [
+          ...new Set(
+            data
+              .map(emp => emp.departamento || '')
+              .filter(dept => dept.trim() !== '')
+          )
+        ];
+        setDepartments(deptsUnicos);
+      } catch (error) {
+        console.error("Error cargando departamentos iniciales:", error);
+      }
+    }
+    loadInitialDepartments();
   }, []);
 
-  const aplicarFiltrosCombinados = (busqueda, departamento) => {
-    let resultado = [...allEmployees];
+  // Efecto que controla la búsqueda en tiempo real (Base de Datos) + Filtro (Local)
+  useEffect(() => {
+    async function obtenerYFiltrarEmpleados() {
+      setLoading(true);
+      try {
+        let resultados = [];
+        
+        // Si no hay texto, trae todos de la BD; si hay texto, usa el IPC de búsqueda por RegExp
+        if (!searchQuery.trim()) {
+          resultados = await employeeService.getAll();
+        } else {
+          resultados = await employeeService.search(searchQuery);
+        }
 
-    if (busqueda.trim()) {
-      resultado = resultado.filter(emp => 
-        emp.nombre.toLowerCase().includes(busqueda.toLowerCase())
-      );
+        // Aplicar el filtro de departamento de forma local sobre los resultados de la BD
+        if (selectedDept) {
+          resultados = resultados.filter(emp => 
+            String(emp.departamento).toLowerCase() === String(selectedDept).toLowerCase()
+          );
+        }
+
+        setFilteredEmployees(resultados);
+      } catch (error) {
+        console.error("Error al filtrar empleados:", error);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    if (departamento) {
-      resultado = resultado.filter(emp => {
-        const valorDept = emp.departamento || emp.puesto || '';
-        return String(valorDept).toLowerCase() === String(departamento).toLowerCase();
-      });
-    }
-
-    setFilteredEmployees(resultado);
-  };
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    aplicarFiltrosCombinados(query, selectedDept);
-  };
-
-  const handleFilterChange = (departmentId) => {
-    setSelectedDept(departmentId);
-    aplicarFiltrosCombinados(searchQuery, departmentId);
-  };
+    obtenerYFiltrarEmpleados();
+  }, [searchQuery, selectedDept]); // Se ejecuta cada vez que cambia la búsqueda o el selector
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>Directorio de Empleados</h1>
       
       <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-        <SearchBar onSearch={handleSearch} />
-        {/* 💡 Le pasamos la lista dinámica de departamentos al componente */}
+        <SearchBar onSearch={(query) => setSearchQuery(query)} />
         <DepartmentFilter 
           departments={departments} 
-          onFilterChange={handleFilterChange} 
+          onFilterChange={(deptId) => setSelectedDept(deptId)} 
         />
       </div>
 
       {loading ? (
-        <p>Cargando empleados...</p>
+        <p>Procesando directorio...</p>
       ) : (
         <EmployeeTable employees={filteredEmployees} onViewProfile={onViewProfile} />
       )}

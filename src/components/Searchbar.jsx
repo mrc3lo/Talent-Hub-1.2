@@ -3,38 +3,27 @@ import React, { useState } from 'react';
 export default function SearchBar({ onSearch }) {
   const [query, setQuery] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Evita que la página se recargue y quede en blanco
-    onSearch(query);
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    onSearch(value); // Dispara la búsqueda automáticamente en cada pulsación
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: 'flex', gap: '8px' }}>
       <input
         type="text"
-        placeholder="Buscar empleado por nombre..."
+        placeholder="Buscar por nombre o cédula..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleChange}
         style={{
           padding: '8px 12px',
           borderRadius: '4px',
           border: '1px solid #ccc',
-          width: '250px'
+          width: '280px',
+          fontSize: '14px'
         }}
       />
-      <button
-        type="submit"
-        style={{
-          padding: '8px 16px',
-          backgroundColor: '#28a745',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
-      >
-        Buscar
-      </button>
-    </form>
+    </div>
   );
 }
