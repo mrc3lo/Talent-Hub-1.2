@@ -13,6 +13,8 @@ export default function EmployeeTable({ employees, onViewProfile }) {
           <tr style={{ backgroundColor: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
             <th style={{ padding: '12px' }}>Nombre</th>
             <th style={{ padding: '12px' }}>RUT/Cédula</th>
+            <th style={{ padding: '12px' }}>Puesto</th>
+            <th style={{ padding: '12px' }}>Estado</th>
             <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
           </tr>
         </thead>
@@ -21,6 +23,8 @@ export default function EmployeeTable({ employees, onViewProfile }) {
             <tr key={emp.id} style={{ borderBottom: '1px solid #eee' }}>
               <td style={{ padding: '12px' }}>{emp.nombre}</td>
               <td style={{ padding: '12px' }}>{emp.cedula}</td>
+              <td style={{ padding: '12px' }}>{emp.puesto}</td>
+              <td style={{ padding: '12px' }}>{emp.estado}</td>
               <td style={{ padding: '12px', textAlign: 'center' }}>
                 <button 
                   onClick={() => {
