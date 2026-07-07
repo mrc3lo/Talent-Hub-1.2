@@ -13,5 +13,14 @@ contextBridge.exposeInMainWorld('api', {
     getAll: () => ipcRenderer.invoke('candidate:getAll'),
     updateStatus: (data) => ipcRenderer.invoke('candidate:updateStatus', data),
     create: (data) => ipcRenderer.invoke('candidate:create', data) // <-- Nueva ruta agregada
+<<<<<<< Updated upstream
+=======
+  },
+  payroll: {
+    getAll: () => ipcRenderer.invoke('nomina:getAll'),
+    filter: (criteria) => ipcRenderer.invoke('nomina:filter', criteria),
+    getCountries: () => ipcRenderer.invoke('nomina:getCountries'),
+    create: (nominaData) => ipcRenderer.invoke('nomina:create', nominaData) // <- Con esta línea solucionamos el error de guardado
+>>>>>>> Stashed changes
   }
 });
