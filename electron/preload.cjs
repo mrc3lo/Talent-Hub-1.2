@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('api', {
     create: (data) => ipcRenderer.invoke('candidate:create', data)
   },
 
+  // (Dominio 3 - Nómina)
   payroll: {
     getAll: () => ipcRenderer.invoke('nomina:getAll'),
     filter: (criteria) => ipcRenderer.invoke('nomina:filter', criteria),
