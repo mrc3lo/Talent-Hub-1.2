@@ -7,9 +7,6 @@ export default function LoginPage({ onLoginSuccess }) {
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Nuevo estado para la confirmación interactiva en el botón sin usar ventanas nativas
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -47,40 +44,6 @@ export default function LoginPage({ onLoginSuccess }) {
     }
   };
 
-  const handleEliminarCuenta = async (e) => {
-    e.preventDefault();
-    setMessage('');
-
-    if (!username) {
-      setMessage('Escribe el correo en el campo de arriba para poder borrarlo.');
-      setIsSuccess(false);
-      setIsConfirmingDelete(false);
-      return;
-    }
-
-    // Primer clic: Activa el modo de confirmación visual en el botón
-    if (!isConfirmingDelete) {
-      setIsConfirmingDelete(true);
-      return;
-    }
-
-    // Segundo clic: Ejecuta la acción directamente sin congelar los hilos de Electron
-    try {
-      const response = await window.api.invoke('auth:delete', { username });
-      setIsSuccess(response.success);
-      setMessage(response.message);
-      
-      // Limpieza segura de estados
-      setUsername('');
-      setPassword('');
-      setIsConfirmingDelete(false);
-    } catch (error) {
-      setMessage('Error al intentar eliminar el usuario.');
-      setIsSuccess(false);
-      setIsConfirmingDelete(false);
-    }
-  };
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#f4f6f9' }}>
       <div style={{ padding: '30px', width: '100%', maxWidth: '360px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
@@ -95,10 +58,7 @@ export default function LoginPage({ onLoginSuccess }) {
               type="text" 
               placeholder="ejemplo@correo.com" 
               value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (isConfirmingDelete) setIsConfirmingDelete(false); // Resetea si cambia el texto
-              }}
+              onChange={(e) => setUsername(e.target.value)}
               style={{ width: '100%', padding: '8px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', color: '#000' }}
             />
           </div>
@@ -117,28 +77,6 @@ export default function LoginPage({ onLoginSuccess }) {
           <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: isRegisterMode ? '#198754' : '#0d6efd', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '10px' }}>
             {isRegisterMode ? 'Registrar Usuario' : 'Iniciar Sesión'}
           </button>
-
-          {/* Botón dinámico con confirmación integrada */}
-          {!isRegisterMode && (
-            <button 
-              type="button"
-              onClick={handleEliminarCuenta} 
-              style={{ 
-                width: '100%', 
-                padding: '8px', 
-                backgroundColor: isConfirmingDelete ? '#dc3545' : '#fff', 
-                color: isConfirmingDelete ? '#fff' : '#dc3545', 
-                border: '1px solid #dc3545', 
-                borderRadius: '4px', 
-                fontWeight: 'bold', 
-                fontSize: '12px', 
-                cursor: 'pointer',
-                transition: 'background-color 0.2s, color 0.2s'
-              }}
-            >
-              {isConfirmingDelete ? '⚠️ ¿Seguro? Haz clic de nuevo para borrar' : '🗑️ Borrar esta cuenta del Sistema'}
-            </button>
-          )}
         </form>
 
         {message && (
@@ -155,7 +93,6 @@ export default function LoginPage({ onLoginSuccess }) {
               setIsSuccess(false); 
               setUsername(''); 
               setPassword(''); 
-              setIsConfirmingDelete(false);
             }} 
             style={{ color: '#0d6efd', cursor: 'pointer', textDecoration: 'underline' }}
           >

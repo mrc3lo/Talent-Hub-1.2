@@ -1,141 +1,151 @@
 const { ipcMain } = require('electron');
-const fs = require('fs');
-const path = require('path');
+const { getDb } = require('../db.cjs');
 
-// Ruta donde se guardará el archivo JSON en la carpeta del proyecto
-const DATA_FILE = path.join(__dirname, 'payroll_db.json');
+const mesesMap = {
+  'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6,
+  'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12
+};
 
-// Lista de países estática
-const ALL_COUNTRIES = [
-  { code: 'ARG', name: 'Argentina' },
-  { code: 'BOL', name: 'Bolivia' },
-  { code: 'BRA', name: 'Brasil' },
-  { code: 'CAN', name: 'Canadá' },
-  { code: 'CHL', name: 'Chile' },
-  { code: 'COL', name: 'Colombia' },
-  { code: 'CRI', name: 'Costa Rica' },
-  { code: 'ECU', name: 'Ecuador' },
-  { code: 'SLV', name: 'El Salvador' },
-  { code: 'ESP', name: 'España' },
-  { code: 'GTM', name: 'Guatemala' },
-  { code: 'HND', name: 'Honduras' },
-  { code: 'MEX', name: 'México' },
-  { code: 'NIC', name: 'Nicaragua' },
-  { code: 'PAN', name: 'Panamá' },
-  { code: 'PRY', name: 'Paraguay' },
-  { code: 'PER', name: 'Perú' },
-  { code: 'PRI', name: 'Puerto Rico' },
-  { code: 'URY', name: 'Uruguay' },
-  { code: 'USA', name: 'Estados Unidos' },
-  { code: 'VEN', name: 'Venezuela' }
-].sort((a, b) => a.name.localeCompare(b.name));
-
-function readDatabase() {
-  try {
-    if (!fs.existsSync(DATA_FILE)) {
-      const initialData = [
-        {
-          id: "init-1",
-          empleado: "Matías Carrasco",
-          mes: "Julio",
-          ano: "2026",
-          salarioBase: 1000000,
-          bonos: 150000,
-          descuentos: 50000,
-          monto: 1100000,
-          fecha: "2026-07-06",
-          estado: "Pendiente",
-          country: "USA"
-        }
-      ];
-      fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
-      return initialData;
-    }
-    const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
-    const parsedData = JSON.parse(fileContent);
-    
-    if (Array.isArray(parsedData)) {
-      return parsedData.filter(item => item && item.empleado && item.empleado.trim() !== "");
-    }
-    return [];
-  } catch (error) {
-    console.error("Error leyendo la base de datos local:", error);
-    return [];
-  }
-}
-
-function writeDatabase(data) {
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
-  } catch (error) {
-    console.error("Error escribiendo la base de datos local:", error);
-    return false;
-  }
-}
+const mesesInversoMap = {
+  1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio',
+  7: 'Julio', 8: 'Agosto', 9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+};
 
 function setupPayrollIPC() {
   
-  ipcMain.handle('nomina:getAll', async () => {
-    const db = readDatabase();
-    return { success: true, data: db };
-  });
-
-  ipcMain.handle('nomina:filterAdvanced', async (event, { mes, ano }) => {
+  // 1. OBTENER FILTROS Y ENLAZAR CON MONGO
+  ipcMain.handle('nomina:filterAdvanced', async (event, filtros) => {
     try {
-      let db = readDatabase();
-      if (mes && mes !== 'Todos') db = db.filter(item => item.mes === mes);
-      if (ano && ano !== 'Todos') db = db.filter(item => item.ano === ano);
-      return { success: true, data: db };
+      const db = getDb();
+      const nominasColeccion = db.collection('nominas');
+      const { mes, ano } = filtros;
+
+      let query = {};
+      
+      if (mes !== 'Todos') {
+        const mesNumero = mesesMap[mes];
+        query.$or = [{ mes: mesNumero }, { mes: mes }];
+      }
+
+      if (ano !== 'Todos') {
+        const anoNumero = parseInt(ano);
+        if (query.$or) {
+          query = {
+            $and: [
+              { $or: query.$or },
+              { $or: [{ ano: anoNumero }, { ano: String(ano) }] }
+            ]
+          };
+        } else {
+          query.$or = [{ ano: anoNumero }, { ano: String(ano) }];
+        }
+      }
+
+      const resultadosMongo = await nominasColeccion.find(query).toArray();
+
+      const datosFormateados = resultadosMongo.map(doc => {
+        let mesTexto = doc.mes;
+        if (typeof doc.mes === 'number') {
+          mesTexto = mesesInversoMap[doc.mes] || 'Julio';
+        }
+
+        return {
+          id: doc._id.toString(),
+          empleado: doc.empleado || 'Juan Pérez',
+          mes: mesTexto,
+          ano: String(doc.ano || '2026'),
+          salarioBase: Number(doc.salarioBase || 0),
+          bonos: Number(doc.bonos || 0),
+          descuentos: Number(doc.descuentos || 0),
+          monto: Number(doc.neto || doc.monto || 0),
+          country: doc.country || 'ARG',
+          estado: doc.estado || 'Pendiente'
+        };
+      });
+
+      return { success: true, data: datosFormateados };
     } catch (error) {
-      return { success: false, data: [] };
+      console.error("Error en nomina:filterAdvanced:", error);
+      return { success: false, data: [], error: error.message };
     }
   });
 
-  ipcMain.handle('nomina:create', async (event, newNomina) => {
+  // 2. CREAR REGISTRO EN MONGO
+  ipcMain.handle('nomina:create', async (event, nominaData) => {
     try {
-      const salarioBase = parseFloat(newNomina.salarioBase || 0);
-      const bonos = parseFloat(newNomina.bonos || 0);
-      const descuentos = parseFloat(newNomina.descuentos || 0);
+      const db = getDb();
+      const nominasColeccion = db.collection('nominas');
+
+      const salarioBase = parseFloat(nominaData.salarioBase || 0);
+      const bonos = parseFloat(nominaData.bonos || 0);
+      const descuentos = parseFloat(nominaData.descuentos || 0);
       const neto = salarioBase + bonos - descuentos;
 
-      const registro = {
-        id: `dyn-${Date.now()}`,
-        empleado: newNomina.empleado,
-        mes: newNomina.mes,
-        ano: newNomina.ano,
+      const nuevoDocumento = {
+        empleado: nominaData.empleado,
+        mes: nominaData.mes, 
+        ano: String(nominaData.ano), 
         salarioBase: salarioBase,
         bonos: bonos,
         descuentos: descuentos,
+        neto: neto,
         monto: neto,
-        fecha: newNomina.fecha,
-        estado: newNomina.estado, 
-        country: newNomina.country
+        country: nominaData.country || 'ARG',
+        estado: nominaData.estado || 'Pendiente',
+        fechaCreacion: new Date()
       };
 
-      const db = readDatabase();
-      db.push(registro);
-      writeDatabase(db);
-      return { success: true, data: db };
+      const resultado = await nominasColeccion.insertOne(nuevoDocumento);
+      return { 
+        success: true, 
+        data: { id: resultado.insertedId.toString(), ...nuevoDocumento } 
+      };
     } catch (error) {
-      return { success: false, message: "Error interno al crear." };
+      console.error("Error en nomina:create:", error);
+      return { success: false, error: error.message };
     }
   });
 
-  // NUEVO INTERCEPTOR PARA ELIMINAR REGISTROS
+  // 3. ELIMINAR DE MONGO
   ipcMain.handle('nomina:delete', async (event, id) => {
     try {
-      let db = readDatabase();
-      db = db.filter(item => item.id !== id);
-      writeDatabase(db);
-      return { success: true, data: db };
+      const db = getDb();
+      const nominasColeccion = db.collection('nominas');
+      const { ObjectId } = require('mongodb');
+
+      await nominasColeccion.deleteOne({ _id: new ObjectId(id) });
+      return { success: true };
     } catch (error) {
-      return { success: false, message: "Error al eliminar el registro." };
+      console.error("Error en nomina:delete:", error);
+      return { success: false, error: error.message };
     }
   });
 
+  // Lista completa de los 21 países requerida por el Front
   ipcMain.handle('nomina:getCountries', async () => {
-    return ALL_COUNTRIES;
+    return [
+      { code: 'ARG', name: 'Argentina' },
+      { code: 'BOL', name: 'Bolivia' },
+      { code: 'BRA', name: 'Brasil' },
+      { code: 'CAN', name: 'Canadá' },
+      { code: 'CHL', name: 'Chile' },
+      { code: 'COL', name: 'Colombia' },
+      { code: 'CRI', name: 'Costa Rica' },
+      { code: 'ECU', name: 'Ecuador' },
+      { code: 'SLV', name: 'El Salvador' },
+      { code: 'ESP', name: 'España' },
+      { code: 'GTM', name: 'Guatemala' },
+      { code: 'HND', name: 'Honduras' },
+      { code: 'MEX', name: 'México' },
+      { code: 'NIC', name: 'Nicaragua' },
+      { code: 'PAN', name: 'Panamá' },
+      { code: 'PRY', name: 'Paraguay' },
+      { code: 'PER', name: 'Perú' },
+      { code: 'PRI', name: 'Puerto Rico' },
+      { code: 'URY', name: 'Uruguay' },
+      { code: 'USA', name: 'Estados Unidos' },
+      { code: 'VEN', name: 'Venezuela' }
+    ];
   });
 }
 

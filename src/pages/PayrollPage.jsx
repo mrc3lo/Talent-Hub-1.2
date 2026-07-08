@@ -27,7 +27,7 @@ export default function PayrollPage() {
   const [isApiLoading, setIsApiLoading] = useState(false);
   const [apiDataResult, setApiDataResult] = useState(null);
 
-  // NUEVO ESTADO: Evita el confirm nativo eliminando el foco fantasma
+  // Estado para el modal de confirmación de borrado de nómina
   const [idALiquidarEliminar, setIdALiquidarEliminar] = useState(null);
 
   // Arreglos fijos para los meses y años
@@ -104,7 +104,6 @@ export default function PayrollPage() {
     }, 1200); 
   };
 
-  // SOLUCIÓN DEFINITIVA: Procesamiento del borrado 100% React sin colgar ventanas secundarias
   const ejecutarBorradoSeguro = async () => {
     if (!idALiquidarEliminar) return;
 
@@ -125,7 +124,7 @@ export default function PayrollPage() {
       });
 
       setMessage('Registro eliminado correctamente.');
-      setIdALiquidarEliminar(null); // Oculta el modal de confirmación
+      setIdALiquidarEliminar(null);
       await obtenerNominasFiltradas();
     }
   };
@@ -162,8 +161,8 @@ export default function PayrollPage() {
   return (
     <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#f4f6f9', minHeight: '100vh' }}>
       <h2 style={{ marginBottom: '20px', color: '#333' }}>Nómina / Liquidaciones</h2>
-      
-      {/* DIÁLOGO EMBEBIDO DE CONFIRMACIÓN REEMPLAZANDO A WINDOW.CONFIRM */}
+
+      {/* DIÁLOGO EMBEBIDO DE CONFIRMACIÓN DE BORRADO DE NÓMINA */}
       {idALiquidarEliminar && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
           <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '350px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', textAlign: 'center' }}>
