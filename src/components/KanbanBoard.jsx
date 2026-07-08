@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
 import { KanbanColumn } from './KanbanColumn';
-// Importamos el servicio para guardar en la base de datos
 import { candidateService } from '../services/candidateService';
 
 export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
-  // Estados locales para los inputs del formulario
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevoPuesto, setNuevoPuesto] = useState('');
 
-  // Separación de los candidatos por columna
-  const postulados = candidates.filter(c => c.estado?.toLowerCase() === 'aplicado' || c.estado?.toLowerCase() === 'postulado');
+  // 1. Filtramos los 4 estados exactos
+  const aplicados = candidates.filter(c => c.estado?.toLowerCase() === 'aplicado' || c.estado?.toLowerCase() === 'postulado');
   const enEntrevista = candidates.filter(c => c.estado?.toLowerCase() === 'entrevista');
-  const enOferta = candidates.filter(c => c.estado?.toLowerCase() === 'oferta');
+  const conOferta = candidates.filter(c => c.estado?.toLowerCase() === 'oferta');
+  const rechazados = candidates.filter(c => c.estado?.toLowerCase() === 'rechazado'); // <-- LA NUEVA FILA
 
-  // Función que se ejecuta al enviar el formulario
   const handleCrearCandidato = async (e) => {
     e.preventDefault();
-    
-    // Validación simple para no enviar datos vacíos
     if (!nuevoNombre.trim() || !nuevoPuesto.trim()) return;
 
     try {
-      // 1. Guardamos en la base de datos
       await candidateService.create({
         nombre: nuevoNombre,
         puesto: nuevoPuesto
       });
 
-      // 2. Limpiamos los campos visualmente
       setNuevoNombre('');
       setNuevoPuesto('');
 
-      // 3. Avisamos al componente padre que recargue la lista
       if (onRefresh) {
         onRefresh();
       }
@@ -42,7 +35,6 @@ export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
 
   return (
     <div>
-      {/* SECCIÓN DEL FORMULARIO */}
       <form 
         onSubmit={handleCrearCandidato} 
         style={{ 
@@ -78,7 +70,7 @@ export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
         </button>
       </form>
 
-      {/* SECCIÓN DE LAS COLUMNAS KANBAN */}
+      {/* 2. Renderizamos las 4 columnas con los nombres y estados correctos */}
       <div style={{ 
         display: 'flex', 
         gap: '20px', 
@@ -87,21 +79,27 @@ export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
         paddingBottom: '10px'
       }}>
         <KanbanColumn 
-          title="Nuevas Postulaciones" 
-          status="postulado" // Ajustado para coincidir con tu backend
-          candidates={postulados} 
+          title="Aplicados" 
+          status="aplicado" 
+          candidates={aplicados} 
           onDropCandidate={onStatusChange} 
         />
         <KanbanColumn 
-          title="En Entrevista" 
+          title="En entrevista" 
           status="entrevista" 
           candidates={enEntrevista} 
           onDropCandidate={onStatusChange} 
         />
         <KanbanColumn 
-          title="Ofertas de Trabajo" 
+          title="Con oferta" 
           status="oferta" 
-          candidates={enOferta} 
+          candidates={conOferta} 
+          onDropCandidate={onStatusChange} 
+        />
+        <KanbanColumn 
+          title="Rechazados" 
+          status="rechazado" 
+          candidates={rechazados} 
           onDropCandidate={onStatusChange} 
         />
       </div>
