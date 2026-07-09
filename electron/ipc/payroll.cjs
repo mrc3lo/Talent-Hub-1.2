@@ -49,16 +49,24 @@ function setupPayrollIPC() {
           mesTexto = mesesInversoMap[doc.mes] || 'Sin registro';
         }
 
+        let codigoPais = doc.country || 'ar';
+        if (codigoPais.length === 3) {
+          const iso3ToIso2 = { 'ARG': 'ar', 'CHL': 'cl', 'COL': 'co', 'MEX': 'mx', 'PER': 'pe', 'JPN': 'jp' };
+          codigoPais = iso3ToIso2[codigoPais.toUpperCase()] || codigoPais.toLowerCase();
+        } else {
+          codigoPais = codigoPais.toLowerCase();
+        }
+
         return {
           id: doc._id.toString(),
           empleado: doc.empleado || 'Juan Pérez',
           mes: mesTexto,
-          ano: String(doc.anio || '2026'),
-          salarioBase: Number(doc.monto || 0),
+          ano: String(doc.anio || doc.ano || '2026'),
+          salarioBase: Number(doc.salarioBase || doc.monto || 0),
           bonos: Number(doc.bonos || 0),
           descuentos: Number(doc.descuentos || 0),
           monto: Number(doc.neto || doc.monto || 0),
-          country: doc.country || 'ARG',
+          country: codigoPais,
           estado: doc.estado || 'Pendiente'
         };
       });
@@ -90,7 +98,7 @@ function setupPayrollIPC() {
         descuentos: descuentos,
         neto: neto,
         monto: neto,
-        country: nominaData.country || 'CHL',
+        country: String(nominaData.country).toLowerCase() || 'cl',
         estado: nominaData.estado || 'Pendiente',
         fechaCreacion: new Date()
       };
@@ -121,31 +129,35 @@ function setupPayrollIPC() {
     }
   });
 
-  // Lista completa de los 21 países requerida por el Front
+  // 4. RETORNO EXCLUSIVO DE LOS 22 PAÍSES PERMITIDOS
   ipcMain.handle('nomina:getCountries', async () => {
-    return [
-      { code: 'ARG', name: 'Argentina' },
-      { code: 'BOL', name: 'Bolivia' },
-      { code: 'BRA', name: 'Brasil' },
-      { code: 'CAN', name: 'Canadá' },
-      { code: 'CHL', name: 'Chile' },
-      { code: 'COL', name: 'Colombia' },
-      { code: 'CRI', name: 'Costa Rica' },
-      { code: 'ECU', name: 'Ecuador' },
-      { code: 'SLV', name: 'El Salvador' },
-      { code: 'ESP', name: 'España' },
-      { code: 'GTM', name: 'Guatemala' },
-      { code: 'HND', name: 'Honduras' },
-      { code: 'MEX', name: 'México' },
-      { code: 'NIC', name: 'Nicaragua' },
-      { code: 'PAN', name: 'Panamá' },
-      { code: 'PRY', name: 'Paraguay' },
-      { code: 'PER', name: 'Perú' },
-      { code: 'PRI', name: 'Puerto Rico' },
-      { code: 'URY', name: 'Uruguay' },
-      { code: 'USA', name: 'Estados Unidos' },
-      { code: 'VEN', name: 'Venezuela' }
+    const lista22Paises = [
+      { code: 'ar', name: 'Argentina' },
+      { code: 'bo', name: 'Bolivia' },
+      { code: 'br', name: 'Brasil' },
+      { code: 'ca', name: 'Canadá' },
+      { code: 'cl', name: 'Chile' },
+      { code: 'co', name: 'Colombia' },
+      { code: 'cr', name: 'Costa Rica' },
+      { code: 'ec', name: 'Ecuador' },
+      { code: 'sv', name: 'El Salvador' },
+      { code: 'es', name: 'España' },
+      { code: 'gt', name: 'Guatemala' },
+      { code: 'hn', name: 'Honduras' },
+      { code: 'mx', name: 'México' },
+      { code: 'ni', name: 'Nicaragua' },
+      { code: 'pa', name: 'Panamá' },
+      { code: 'py', name: 'Paraguay' },
+      { code: 'pe', name: 'Perú' },
+      { code: 'pr', name: 'Puerto Rico' },
+      { code: 'uy', name: 'Uruguay' },
+      { code: 'us', name: 'Estados Unidos' },
+      { code: 've', name: 'Venezuela' },
+      { code: 'jp', name: 'Japón' }
     ];
+
+    // Se retorna directamente la lista acotada ordenada alfabéticamente
+    return lista22Paises.sort((a, b) => a.name.localeCompare(b.name));
   });
 }
 

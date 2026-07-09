@@ -8,7 +8,7 @@ export default function PayrollPage() {
   const [filtroMes, setFiltroMes] = useState('Todos');
   const [filtroAno, setFiltroAno] = useState('Todos');
 
-  // Estado unificado del formulario
+  // Estado unificado del formulario (Clave inicial 'ar' en minúscula)
   const [form, setForm] = useState({
     empleado: '',
     mes: 'Julio',
@@ -16,7 +16,7 @@ export default function PayrollPage() {
     salarioBase: '',
     bonos: '',
     descuentos: '',
-    country: 'ARG',
+    country: 'ar',
     estado: 'Pendiente'
   });
   
@@ -37,29 +37,30 @@ export default function PayrollPage() {
   ];
   const listaAnos = ['2024', '2025', '2026', '2027'];
 
-  // Diccionario de países
+  // Diccionario base detallado para los 22 países principales
   const localCountriesDict = {
-    ARG: { flag: 'https://flagcdn.com/w320/ar.png', currency: 'Peso Argentino (ARS)', lang: 'Español' },
-    BOL: { flag: 'https://flagcdn.com/w320/bo.png', currency: 'Boliviano (BOB)', lang: 'Español, Quechua' },
-    BRA: { flag: 'https://flagcdn.com/w320/br.png', currency: 'Real Brasileño (BRL)', lang: 'Portugués' },
-    CAN: { flag: 'https://flagcdn.com/w320/ca.png', currency: 'Dólar Canadiense (CAD)', lang: 'Inglés, Francés' },
-    CHL: { flag: 'https://flagcdn.com/w320/cl.png', currency: 'Peso Chileno (CLP)', lang: 'Español' },
-    COL: { flag: 'https://flagcdn.com/w320/co.png', currency: 'Peso Colombiano (COP)', lang: 'Español' },
-    CRI: { flag: 'https://flagcdn.com/w320/cr.png', currency: 'Colón Costarricense (CRC)', lang: 'Español' },
-    ECU: { flag: 'https://flagcdn.com/w320/ec.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
-    SLV: { flag: 'https://flagcdn.com/w320/sv.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
-    ESP: { flag: 'https://flagcdn.com/w320/es.png', currency: 'Euro (EUR)', lang: 'Español' },
-    GTM: { flag: 'https://flagcdn.com/w320/gt.png', currency: 'Quetzal (GTQ)', lang: 'Español' },
-    HND: { flag: 'https://flagcdn.com/w320/hn.png', currency: 'Lempira (HNL)', lang: 'Español' },
-    MEX: { flag: 'https://flagcdn.com/w320/mx.png', currency: 'Peso Mexicano (MXN)', lang: 'Español' },
-    NIC: { flag: 'https://flagcdn.com/w320/ni.png', currency: 'Córdoba (NIO)', lang: 'Español' },
-    PAN: { flag: 'https://flagcdn.com/w320/pa.png', currency: 'Balboa (PAB) / USD', lang: 'Español' },
-    PRY: { flag: 'https://flagcdn.com/w320/py.png', currency: 'Guaraní (PYG)', lang: 'Español' },
-    PER: { flag: 'https://flagcdn.com/w320/pe.png', currency: 'Sol (PEN)', lang: 'Español' },
-    PRI: { flag: 'https://flagcdn.com/w320/pr.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
-    URY: { flag: 'https://flagcdn.com/w320/uy.png', currency: 'Peso Uruguayo (UYU)', lang: 'Español' },
-    USA: { flag: 'https://flagcdn.com/w320/us.png', currency: 'Dólar Americano (USD)', lang: 'Inglés' },
-    VEN: { flag: 'https://flagcdn.com/w320/ve.png', currency: 'Bolívar Soberano (VES)', lang: 'Español' }
+    AR: { flag: 'https://flagcdn.com/w320/ar.png', currency: 'Peso Argentino (ARS)', lang: 'Español' },
+    BO: { flag: 'https://flagcdn.com/w320/bo.png', currency: 'Boliviano (BOB)', lang: 'Español, Quechua' },
+    BR: { flag: 'https://flagcdn.com/w320/br.png', currency: 'Real Brasileño (BRL)', lang: 'Portugués' },
+    CA: { flag: 'https://flagcdn.com/w320/ca.png', currency: 'Dólar Canadiense (CAD)', lang: 'Inglés, Francés' },
+    CL: { flag: 'https://flagcdn.com/w320/cl.png', currency: 'Peso Chileno (CLP)', lang: 'Español' },
+    CO: { flag: 'https://flagcdn.com/w320/co.png', currency: 'Peso Colombiano (COP)', lang: 'Español' },
+    CR: { flag: 'https://flagcdn.com/w320/cr.png', currency: 'Colón Costarricense (CRC)', lang: 'Español' },
+    EC: { flag: 'https://flagcdn.com/w320/ec.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
+    SV: { flag: 'https://flagcdn.com/w320/sv.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
+    ES: { flag: 'https://flagcdn.com/w320/es.png', currency: 'Euro (EUR)', lang: 'Español' },
+    GT: { flag: 'https://flagcdn.com/w320/gt.png', currency: 'Quetzal (GTQ)', lang: 'Español' },
+    HN: { flag: 'https://flagcdn.com/w320/hn.png', currency: 'Lempira (HNL)', lang: 'Español' },
+    MX: { flag: 'https://flagcdn.com/w320/mx.png', currency: 'Peso Mexicano (MXN)', lang: 'Español' },
+    NI: { flag: 'https://flagcdn.com/w320/ni.png', currency: 'Córdoba (NIO)', lang: 'Español' },
+    PA: { flag: 'https://flagcdn.com/w320/pa.png', currency: 'Balboa (PAB) / USD', lang: 'Español' },
+    PY: { flag: 'https://flagcdn.com/w320/py.png', currency: 'Guaraní (PYG)', lang: 'Español' },
+    PE: { flag: 'https://flagcdn.com/w320/pe.png', currency: 'Sol (PEN)', lang: 'Español' },
+    PR: { flag: 'https://flagcdn.com/w320/pr.png', currency: 'Dólar Americano (USD)', lang: 'Español' },
+    UY: { flag: 'https://flagcdn.com/w320/uy.png', currency: 'Peso Uruguayo (UYU)', lang: 'Español' },
+    US: { flag: 'https://flagcdn.com/w320/us.png', currency: 'Dólar Americano (USD)', lang: 'Inglés' },
+    VE: { flag: 'https://flagcdn.com/w320/ve.png', currency: 'Bolívar Soberano (VES)', lang: 'Español' },
+    JP: { flag: 'https://flagcdn.com/w320/jp.png', currency: 'Yen Japonés (JPY)', lang: 'Japonés' }
   };
 
   useEffect(() => {
@@ -86,19 +87,30 @@ export default function PayrollPage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleVerInfo = (codigoPais) => {
-    setSelectedPaisDetalle(codigoPais);
+    if (!codigoPais) return;
+    const cleanCode = String(codigoPais).trim().toUpperCase();
+    
+    setSelectedPaisDetalle(cleanCode);
     setIsApiLoading(true);
     setApiDataResult(null);
 
     setTimeout(() => {
-      const datos = localCountriesDict[codigoPais.toUpperCase()];
+      let datos = localCountriesDict[cleanCode];
+      
+      // Respaldo dinámico por si se despliega un código fuera del rango esperado
+      if (!datos) {
+        const flagCodeLower = cleanCode.toLowerCase();
+        datos = {
+          flag: `https://flagcdn.com/w320/${flagCodeLower}.png`,
+          currency: `Moneda de curso legal en base a código territorial (${cleanCode})`,
+          lang: `Idioma oficial regulado localmente`
+        };
+      }
+      
       setApiDataResult(datos);
       setIsApiLoading(false);
     }, 1200); 
@@ -119,7 +131,7 @@ export default function PayrollPage() {
         salarioBase: '',
         bonos: '',
         descuentos: '',
-        country: paises.length > 0 ? paises[0].code : 'ARG',
+        country: paises.length > 0 ? paises[0].code : 'ar',
         estado: 'Pendiente'
       });
 
@@ -150,7 +162,7 @@ export default function PayrollPage() {
         salarioBase: '',
         bonos: '',
         descuentos: '',
-        country: paises.length > 0 ? paises[0].code : 'ARG',
+        country: paises.length > 0 ? paises[0].code : 'ar',
         estado: 'Pendiente'
       });
       setMessage('Nómina guardada con éxito.');
@@ -159,15 +171,9 @@ export default function PayrollPage() {
   };
 
   return (
-    <div style={{ padding: '30px', 
-    fontFamily: 'sans-serif', 
-    //backgroundColor: '#f4f6f9', 
-    minHeight: '100vh' }}>
-      <h2 style={{ marginBottom: '20px', 
-        //color: '#333' 
-        }}>Nómina / Liquidaciones</h2>
+    <div style={{ padding: '30px', fontFamily: 'sans-serif', minHeight: '100vh' }}>
+      <h2 style={{ marginBottom: '20px' }}>Nómina / Liquidaciones</h2>
 
-      {/* DIÁLOGO EMBEBIDO DE CONFIRMACIÓN DE BORRADO DE NÓMINA */}
       {idALiquidarEliminar && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
           <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', width: '350px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', textAlign: 'center' }}>
@@ -181,14 +187,7 @@ export default function PayrollPage() {
         </div>
       )}
 
-      {/* FORMULARIO */}
-      <div style={{ 
-        //backgroundColor: '#fff', 
-        padding: '20px', 
-        borderRadius: '8px', 
-        marginBottom: '25px', 
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
-        }}>
+      <div style={{ padding: '20px', borderRadius: '8px', marginBottom: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
         <h4 style={{ marginTop: 0 }}>Registrar Nueva Liquidación de Sueldo</h4>
         <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
           <div>
@@ -233,19 +232,13 @@ export default function PayrollPage() {
             </select>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button type="submit" style={{ width: '100%', padding: '8px', 
-              //backgroundColor: '#198754', 
-              //color: '#fff', 
-              border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Guardar Nómina</button>
+            <button type="submit" style={{ width: '100%', padding: '8px', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Guardar Nómina</button>
           </div>
         </form>
         {message && <p style={{ color: '#0d6efd', fontSize: '13px', margin: '10px 0 0 0' }}>{message}</p>}
       </div>
 
-      {/* FILTROS */}
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', 
-        //backgroundColor: '#fff', 
-        padding: '12px', borderRadius: '6px' }}>
+      <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', padding: '12px', borderRadius: '6px' }}>
         <span style={{ fontWeight: 'bold', alignSelf: 'center', fontSize: '14px' }}>🔍 Filtros de Vista:</span>
         <select value={filtroMes} onChange={e => setFiltroMes(e.target.value)} style={{ padding: '5px' }}>
           <option value="Todos">Todos los Meses</option>
@@ -257,19 +250,10 @@ export default function PayrollPage() {
         </select>
       </div>
 
-      {/* TABLA */}
-      <div style={{ //backgroundColor: '#fff', 
-        borderRadius: '8px', 
-        overflow: 'hidden', 
-        //boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
-        }}>
+      <div style={{ borderRadius: '8px', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ 
-              //backgroundColor: '#0d6efd', 
-              //color: '#fff', 
-              fontSize: '14px' 
-              }}>
+            <tr style={{ fontSize: '14px' }}>
               <th style={{ padding: '12px' }}>Empleado</th>
               <th style={{ padding: '12px' }}>Mes</th>
               <th style={{ padding: '12px' }}>Año</th>
@@ -290,7 +274,7 @@ export default function PayrollPage() {
               </tr>
             ) : (
               nominas.map(n => {
-                const codigoPais = n.country ? n.country.toUpperCase() : 'ARG';
+                const codigoPais = n.country ? String(n.country).trim().toUpperCase() : 'AR';
                 return (
                   <tr key={n.id} style={{ borderBottom: '1px solid #eee', fontSize: '13px' }}>
                     <td style={{ padding: '12px', fontWeight: 'bold' }}>{n.empleado}</td>
@@ -306,9 +290,7 @@ export default function PayrollPage() {
                       </span>
                     </td>
                     <td style={{ padding: '12px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      <button type="button" onClick={() => handleVerInfo(codigoPais)} style={{ padding: '4px 10px', fontSize: '11px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', 
-                        //backgroundColor: '#f8f9fa' 
-                        }}>
+                      <button type="button" onClick={() => handleVerInfo(codigoPais)} style={{ padding: '4px 10px', fontSize: '11px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc' }}>
                         🌍 Ver Info {codigoPais}
                       </button>
                       <button type="button" onClick={() => setIdALiquidarEliminar(n.id)} title="Eliminar liquidación" style={{ padding: '4px 8px', fontSize: '12px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #dc3545', backgroundColor: '#fff', color: '#dc3545' }}>
@@ -323,7 +305,6 @@ export default function PayrollPage() {
         </table>
       </div>
 
-      {/* DETALLES INTERNACIONALES */}
       {selectedPaisDetalle && (
         <div style={{ marginTop: '25px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #dee2e6', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e9ecef', paddingBottom: '10px', marginBottom: '15px' }}>
@@ -333,12 +314,12 @@ export default function PayrollPage() {
           
           {isApiLoading ? (
             <div style={{ fontSize: '13px', color: '#495057', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 0' }}>
-              ⌛ <strong>Cargando informacion en tiempo real, espere un momento...</strong>
+              ⌛ <strong>Cargando información en tiempo real, espere un momento...</strong>
             </div>
           ) : (
             apiDataResult && (
               <div style={{ display: 'flex', gap: '25px', alignItems: 'center' }}>
-                <img src={apiDataResult.flag} alt={`Bandera de ${selectedPaisDetalle}`} style={{ width: '70px', borderRadius: '4px', border: '1px solid #ced4da', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+                <img src={apiDataResult.flag} alt={`Bandera de ${selectedPaisDetalle}`} onError={(e) => { e.target.src = 'https://flagcdn.com/w320/un.png'; }} style={{ width: '70px', borderRadius: '4px', border: '1px solid #ced4da', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
                 <div style={{ fontSize: '13px', color: '#333', lineHeight: '1.6' }}>
                   <p style={{ margin: '3px 0' }}><strong>Moneda Homologada de Remesa:</strong> {apiDataResult.currency}</p>
                   <p style={{ margin: '3px 0' }}><strong>Idioma del Contrato Adicional:</strong> {apiDataResult.lang}</p>
