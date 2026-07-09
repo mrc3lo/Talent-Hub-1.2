@@ -6,7 +6,7 @@ cliente = MongoClient("mongodb://localhost:27017")
 
 db = cliente["talent_hub"]
 
-with open("./Seed-db/Talent_Hub.json", encoding="utf8") as archivo:
+with open("./talent-hub/Seed-db/Talent_Hub.json", encoding="utf8") as archivo:
     datos = json.load(archivo,
                       object_hook=json_util.object_hook)
 
