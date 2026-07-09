@@ -1,0 +1,336 @@
+{
+    "empleados": [
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "cedula": "11111111-1",
+            "nombre": "Juan Pérez",
+            "email": "juan@company.com",
+            "puesto_id": {
+                "$oid": "507f191e810c19729de88a01"
+            },
+            "departamento_id": {
+                "$oid": "507f191e810c19729de88101"
+            },
+            "fecha_ingreso": {
+                "$date": "2020-01-15T00:00:00Z"
+            },
+            "salario": 1000000,
+            "estado": "activo"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88202"
+            },
+            "cedula": "22222222-2",
+            "nombre": "María García",
+            "email": "maria@company.com",
+            "puesto_id": {
+                "$oid": "507f191e810c19729de88a02"
+            },
+            "departamento_id": {
+                "$oid": "507f191e810c19729de88102"
+            },
+            "fecha_ingreso": {
+                "$date": "2019-06-20T00:00:00Z"
+            },
+            "salario": 1500000,
+            "estado": "activo"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88203"
+            },
+            "cedula": "33333333-3",
+            "nombre": "Carlos López",
+            "email": "carlos@company.com",
+            "puesto_id": {
+                "$oid": "507f191e810c19729de88a03"
+            },
+            "departamento_id": {
+                "$oid": "507f191e810c19729de88103"
+            },
+            "fecha_ingreso": {
+                "$date": "2021-03-10T00:00:00Z"
+            },
+            "salario": 750000,
+            "estado": "activo"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88204"
+            },
+            "cedula": "44444444-4",
+            "nombre": "Ana Rodríguez",
+            "email": "ana@company.com",
+            "puesto_id": {
+                "$oid": "507f191e810c19729de88a01"
+            },
+            "departamento_id": {
+                "$oid": "507f191e810c19729de88101"
+            },
+            "fecha_ingreso": {
+                "$date": "2020-08-05T00:00:00Z"
+            },
+            "salario": 950000,
+            "estado": "activo"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88205"
+            },
+            "cedula": "55555555-5",
+            "nombre": "Luis Martínez",
+            "email": "luis@company.com",
+            "puesto_id": {
+                "$oid": "507f191e810c19729de88a04"
+            },
+            "departamento_id": {
+                "$oid": "507f191e810c19729de88104"
+            },
+            "fecha_ingreso": {
+                "$date": "2018-11-30T00:00:00Z"
+            },
+            "salario": 800000,
+            "estado": "activo"
+        }
+    ],
+    "nomina": [
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68442"
+            },
+            "mes": "Julio",
+            "anio": 2026,
+            "empleado": "Juan Pérez",
+            "monto": 1000000,
+            "estado": "Pagado",
+            "country": "CHL",
+            "bonos": 25000,
+            "descuentos": 20000
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68443"
+            },
+            "mes": "Julio",
+            "anio": 2026,
+            "empleado": "María García",
+            "monto": 1500000,
+            "estado": "Pagado",
+            "country": "MEX",
+            "bonos": 50000,
+            "descuentos": 20000
+        }
+    ],
+    "capacitaciones": [
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c6843b"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "nombre": "React Avanzado",
+            "tipo": "Técnica",
+            "fecha": {
+                "$date": "2024-06-15T00:00:00Z"
+            },
+            "institucion": "Platzi"
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c6843c"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "nombre": "Liderazgo",
+            "tipo": "Soft Skills",
+            "fecha": {
+                "$date": "2024-09-20T00:00:00Z"
+            },
+            "institucion": "Udemy"
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c6843d"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88202"
+            },
+            "nombre": "Ventas B2B",
+            "tipo": "Especializada",
+            "fecha": {
+                "$date": "2024-08-10T00:00:00Z"
+            },
+            "institucion": "LinkedIn Learning"
+        }
+    ],
+    "evaluaciones": [
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c6843e"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "fecha": {
+                "$date": "2025-12-01T00:00:00Z"
+            },
+            "evaluador": "Carlos López",
+            "puntaje": 5,
+            "comentarios": "Excelente desempeño técnico y proactividad."
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c6843f"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "fecha": {
+                "$date": "2025-06-15T00:00:00Z"
+            },
+            "evaluador": "Marta Gómez",
+            "puntaje": 4,
+            "comentarios": "Gran trabajo en equipo, cumplió todas las metas."
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68440"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88201"
+            },
+            "fecha": {
+                "$date": "2024-12-10T00:00:00Z"
+            },
+            "evaluador": "Carlos López",
+            "puntaje": 4,
+            "comentarios": "Buen inicio en el proyecto, adaptado al flujo."
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68441"
+            },
+            "empleadoId": {
+                "$oid": "507f191e810c19729de88202"
+            },
+            "fecha": {
+                "$date": "2025-11-20T00:00:00Z"
+            },
+            "evaluador": "Dirección General",
+            "puntaje": 5,
+            "comentarios": "Líder nata, superó la cuota de ventas del trimestre."
+        }
+    ],
+    "candidatos": [
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68444"
+            },
+            "nombre": "Roberto Días",
+            "puesto": "Desarrollador Backend",
+            "estado": "entrevista"
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68445"
+            },
+            "nombre": "Elena Rostova",
+            "puesto": "Diseñadora UX/UI",
+            "estado": "postulado"
+        },
+        {
+            "_id": {
+                "$oid": "6a4ce88f48a3bf7bc7c68446"
+            },
+            "nombre": "Pedro Cáceres",
+            "puesto": "Contador Senior",
+            "estado": "contratado"
+        }
+    ],
+    "departamentos": [
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88101"
+            },
+            "nombre": "Tecnología",
+            "descripcion": "Departamento de TI"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88102"
+            },
+            "nombre": "Ventas",
+            "descripcion": "Equipo de ventas"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88103"
+            },
+            "nombre": "Recursos Humanos",
+            "descripcion": "Gestión de personal"
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88104"
+            },
+            "nombre": "Finanzas",
+            "descripcion": "Contabilidad"
+        }
+    ],
+    "puestos": [
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88a01"
+            },
+            "nombre": "Desarrollador",
+            "salario_minimo": 800000,
+            "salario_maximo": 1500000
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88a02"
+            },
+            "nombre": "Gerente de Ventas",
+            "salario_minimo": 1200000,
+            "salario_maximo": 2000000
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88a03"
+            },
+            "nombre": "Coordinador RR.HH.",
+            "salario_minimo": 600000,
+            "salario_maximo": 1000000
+        },
+        {
+            "_id": {
+                "$oid": "507f191e810c19729de88a04"
+            },
+            "nombre": "Contador",
+            "salario_minimo": 700000,
+            "salario_maximo": 1200000
+        }
+    ],
+    "historial_puestos": [
+        {
+            "_id": {
+                "$oid": "6a4accae8ddb78a6a8574437"
+            },
+            "empleadoId": {
+                "$oid": "6a4accae8ddb78a6a8574432"
+            },
+            "puestoId": {
+                "$oid": "6a4accae8ddb78a6a8574431"
+            },
+            "fechaInicio": {
+                "$date": "2025-01-10T00:00:00Z"
+            },
+            "fechaFin": null
+        }
+    ]
+}
