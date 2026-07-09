@@ -159,8 +159,13 @@ export default function PayrollPage() {
   };
 
   return (
-    <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#f4f6f9', minHeight: '100vh' }}>
-      <h2 style={{ marginBottom: '20px', color: '#333' }}>Nómina / Liquidaciones</h2>
+    <div style={{ padding: '30px', 
+    fontFamily: 'sans-serif', 
+    //backgroundColor: '#f4f6f9', 
+    minHeight: '100vh' }}>
+      <h2 style={{ marginBottom: '20px', 
+        //color: '#333' 
+        }}>Nómina / Liquidaciones</h2>
 
       {/* DIÁLOGO EMBEBIDO DE CONFIRMACIÓN DE BORRADO DE NÓMINA */}
       {idALiquidarEliminar && (
@@ -177,7 +182,13 @@ export default function PayrollPage() {
       )}
 
       {/* FORMULARIO */}
-      <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', marginBottom: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+      <div style={{ 
+        //backgroundColor: '#fff', 
+        padding: '20px', 
+        borderRadius: '8px', 
+        marginBottom: '25px', 
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
+        }}>
         <h4 style={{ marginTop: 0 }}>Registrar Nueva Liquidación de Sueldo</h4>
         <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
           <div>
@@ -222,14 +233,19 @@ export default function PayrollPage() {
             </select>
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button type="submit" style={{ width: '100%', padding: '8px', backgroundColor: '#198754', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Guardar Nómina</button>
+            <button type="submit" style={{ width: '100%', padding: '8px', 
+              //backgroundColor: '#198754', 
+              //color: '#fff', 
+              border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}>Guardar Nómina</button>
           </div>
         </form>
         {message && <p style={{ color: '#0d6efd', fontSize: '13px', margin: '10px 0 0 0' }}>{message}</p>}
       </div>
 
       {/* FILTROS */}
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', backgroundColor: '#fff', padding: '12px', borderRadius: '6px' }}>
+      <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', 
+        //backgroundColor: '#fff', 
+        padding: '12px', borderRadius: '6px' }}>
         <span style={{ fontWeight: 'bold', alignSelf: 'center', fontSize: '14px' }}>🔍 Filtros de Vista:</span>
         <select value={filtroMes} onChange={e => setFiltroMes(e.target.value)} style={{ padding: '5px' }}>
           <option value="Todos">Todos los Meses</option>
@@ -242,10 +258,18 @@ export default function PayrollPage() {
       </div>
 
       {/* TABLA */}
-      <div style={{ backgroundColor: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+      <div style={{ //backgroundColor: '#fff', 
+        borderRadius: '8px', 
+        overflow: 'hidden', 
+        //boxShadow: '0 2px 8px rgba(0,0,0,0.05)' 
+        }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ backgroundColor: '#0d6efd', color: '#fff', fontSize: '14px' }}>
+            <tr style={{ 
+              //backgroundColor: '#0d6efd', 
+              //color: '#fff', 
+              fontSize: '14px' 
+              }}>
               <th style={{ padding: '12px' }}>Empleado</th>
               <th style={{ padding: '12px' }}>Mes</th>
               <th style={{ padding: '12px' }}>Año</th>
@@ -282,7 +306,9 @@ export default function PayrollPage() {
                       </span>
                     </td>
                     <td style={{ padding: '12px', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      <button type="button" onClick={() => handleVerInfo(codigoPais)} style={{ padding: '4px 10px', fontSize: '11px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#f8f9fa' }}>
+                      <button type="button" onClick={() => handleVerInfo(codigoPais)} style={{ padding: '4px 10px', fontSize: '11px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', 
+                        //backgroundColor: '#f8f9fa' 
+                        }}>
                         🌍 Ver Info {codigoPais}
                       </button>
                       <button type="button" onClick={() => setIdALiquidarEliminar(n.id)} title="Eliminar liquidación" style={{ padding: '4px 8px', fontSize: '12px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #dc3545', backgroundColor: '#fff', color: '#dc3545' }}>

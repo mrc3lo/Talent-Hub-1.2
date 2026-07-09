@@ -1,0 +1,137 @@
+:root {
+  --primary: #7c8cff;
+  --primary-2: #9aa6ff;
+  --accent: #5ee7c8;
+  --bg: #060816;
+  --surface: #101728;
+  --surface-2: #151d32;
+  --surface-3: #1b243a;
+  --text: #f4f7ff;
+  --text-muted: #b7c0d3;
+  --border: rgba(255,255,255,0.1);
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; padding: 0; min-height: 100%; }
+
+body {
+  font-family: Inter, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: #060816;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, h5, h6, p, label, span, button, input, select, textarea {
+  font-family: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
+  margin: 0 0 0.7rem;
+}
+
+p {
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  padding: 0.72rem 0.9rem;
+  transition: 180ms ease;
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+button {
+  background: var(--primary);
+  color: #f8faff;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8px 18px rgba(124, 140, 255, 0.22);
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(124, 140, 255, 0.28);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124, 140, 255, 0.16);
+}
+
+.card,
+section,
+div[style*="backgroundColor: '#fff'"] {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+nav,
+.navbar,
+.sidebar {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+th {
+  background: var(--surface-3);
+  color: var(--text);
+  text-align: left;
+  padding: 0.85rem 0.95rem;
+  font-weight: 700;
+}
+
+td {
+  padding: 0.8rem 0.95rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  color: var(--text-muted);
+}
+
+tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary-2);
+  text-decoration: underline;
+}
+
+main, .container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  main, .container {
+    padding: 0.9rem;
+  }
+
+  button, input, select, textarea {
+    width: 100%;
+  }
+}

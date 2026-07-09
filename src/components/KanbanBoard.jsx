@@ -40,7 +40,7 @@ export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
         style={{ 
           marginBottom: '20px', 
           padding: '15px', 
-          background: '#f8f9fa', 
+          //background: '#f8f9fa', 
           borderRadius: '8px',
           display: 'flex',
           gap: '10px',
@@ -64,7 +64,10 @@ export const KanbanBoard = ({ candidates, onStatusChange, onRefresh }) => {
         />
         <button 
           type="submit" 
-          style={{ padding: '8px 16px', borderRadius: '4px', background: '#007bff', color: 'white', border: 'none', cursor: 'pointer' }}
+          style={{ padding: '8px 16px', borderRadius: '4px', 
+            //background: '#007bff', 
+            //color: 'white', 
+            border: 'none', cursor: 'pointer' }}
         >
           Agregar
         </button>

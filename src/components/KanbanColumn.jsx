@@ -26,7 +26,7 @@ export const KanbanColumn = ({ title, status, candidates, onDropCandidate }) => 
       onDragOver={handleDragOver} // <-- Activamos la zona de caída
       onDrop={handleDrop} // <-- Capturamos la tarjeta soltada
       style={{
-        backgroundColor: '#f1f5f9',
+        backgroundColor: '#343b80',
         borderRadius: '8px',
         padding: '15px',
         width: '280px',
@@ -34,7 +34,9 @@ export const KanbanColumn = ({ title, status, candidates, onDropCandidate }) => 
         display: 'flex',
         flexDirection: 'column'
       }}>
-      <h3 style={{ marginTop: 0, fontSize: '16px', color: '#475569', marginBottom: '15px' }}>
+      <h3 style={{ marginTop: 0, fontSize: '16px', 
+        //color: '#475569', 
+        marginBottom: '15px' }}>
         {title} ({candidates.length})
       </h3>
       

@@ -9,7 +9,7 @@ export default function DepartmentFilter({ departments = [], onFilterChange }) {
           padding: '8px 12px',
           borderRadius: '4px',
           border: '1px solid #ccc',
-          backgroundColor: '#fff',
+          //backgroundColor: '#fff',
           cursor: 'pointer',
           fontSize: '14px'
         }}

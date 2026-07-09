@@ -9,7 +9,7 @@ export default function App() {
   // El estado inicial es 'login'. Así la app siempre arranca ahí de forma segura.
   const [currentPage, setCurrentPage] = useState('login');
   
-  // Tu estado para controlar si estamos viendo el detalle de un empleado en tu directorio
+  // Estado para controlar si estamos viendo el detalle de un empleado en tu directorio
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   // Función para cambiar de pantalla de forma segura
@@ -29,12 +29,12 @@ export default function App() {
       {currentPage === 'employees' && (
         <div>
           {/* Barra de navegación unificada */}
-          <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <nav style={{ padding: '10px', display: 'flex', gap: '15px', alignItems: 'center' }}>
             <strong>TalentHub v1.0</strong>
             <button onClick={() => { setSelectedEmployeeId(null); navigate('employees'); }} style={{ fontWeight: 'bold' }}>📁 Directorio</button>
             <button onClick={() => navigate('recruitment')}>📋 Reclutamiento (Kanban)</button>
             <button onClick={() => navigate('payroll')}>💰 Nómina</button>
-            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ffcccc', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
+            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ff8000', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
           </nav>
           
           {/* Lógica integrada de tu módulo: Si hay ID seleccionado muestra perfil, sino el listado */}
@@ -59,12 +59,12 @@ export default function App() {
       {/* 3. VISTA DE RECLUTAMIENTO / KANBAN (DOMINIO 2) */}
       {currentPage === 'recruitment' && (
         <div>
-          <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <nav style={{ padding: '10px', display: 'flex', gap: '15px', alignItems: 'center' }}>
             <strong>TalentHub v1.0</strong>
             <button onClick={() => { setSelectedEmployeeId(null); navigate('employees'); }}>📁 Directorio</button>
             <button onClick={() => navigate('recruitment')} style={{ fontWeight: 'bold' }}>📋 Reclutamiento (Kanban)</button>
             <button onClick={() => navigate('payroll')}>💰 Nómina</button>
-            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ffcccc', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
+            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ff8000', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
           </nav>
           
           <div style={{ padding: '20px' }}>
@@ -76,12 +76,12 @@ export default function App() {
       {/* 4. VISTA DE NÓMINA */}
       {currentPage === 'payroll' && (
         <div>
-          <nav style={{ padding: '10px', background: '#eee', display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <nav style={{ padding: '10px', display: 'flex', gap: '15px', alignItems: 'center' }}>
             <strong>TalentHub v1.0</strong>
             <button onClick={() => { setSelectedEmployeeId(null); navigate('employees'); }}>📁 Directorio</button>
             <button onClick={() => navigate('recruitment')}>📋 Reclutamiento (Kanban)</button>
             <button onClick={() => navigate('payroll')} style={{ fontWeight: 'bold' }}>💰 Nómina</button>
-            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ffcccc', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
+            <button onClick={() => navigate('login')} style={{ marginLeft: 'auto', background: '#ff8000', border: '1px solid #ff9999', borderRadius: '4px', cursor: 'pointer' }}>🚪 Cerrar Sesión</button>
           </nav>
           
           <div style={{ padding: '20px' }}>

@@ -33,8 +33,8 @@ export default function EmployeeTable({ employees, onViewProfile }) {
                     onViewProfile(idFinal);
                   }}
                   style={{
-                    backgroundColor: '#007bff',
-                    color: '#fff',
+                    //backgroundColor: '#007bff',
+                    //color: '#fff',
                     border: 'none',
                     padding: '6px 12px',
                     borderRadius: '4px',
