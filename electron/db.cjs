@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 
 const url = 'mongodb://localhost:27017';
 const client = new MongoClient(url);
-const dbName = 'talent_hub'; // El nombre exacto que aparece en tu MongoDB Compass
+const dbName = 'talent_hub'; // El nombre exacto que aparece en MongoDB Compass
 
 let db;
 

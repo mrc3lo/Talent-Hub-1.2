@@ -1,5 +1,5 @@
 const { ipcMain } = require('electron');
-const { connectDB } = require('../db.cjs'); 
+const { connectDb } = require('../db.cjs'); 
 const { ObjectId } = require('mongodb');
 
 function initEmployeeIPC() {
@@ -7,7 +7,7 @@ function initEmployeeIPC() {
   // 1. Obtener todos los empleados de MongoDB (Con Departamento y Puesto reales)
   ipcMain.handle('employee:getAll', async () => {
     try {
-      const db = await connectDB();
+      const db = await connectDb();
       
       const empleadosConDept = await db.collection('empleados').aggregate([
         // Relación con Departamentos
@@ -63,7 +63,7 @@ function initEmployeeIPC() {
   // 2. Buscar empleados por expresión regular (Nombre o Cédula) - CORREGIDO CORCHETE/LLAVE
   ipcMain.handle('employee:search', async (event, query) => {
     try {
-      const db = await connectDB();
+      const db = await connectDb();
       
       const filtro = {
         $or: [
@@ -124,7 +124,7 @@ function initEmployeeIPC() {
   // 3. Obtener el expediente completo del perfil (Con aggregate para rellenar Puesto y Departamento)
   ipcMain.handle('employee:getProfileData', async (event, id) => {
     try {
-      const db = await connectDB();
+      const db = await connectDb();
       
       const cleanId = String(id).trim();
       console.log("-> Servidor Electron intentando buscar el ID en MongoDB:", cleanId);

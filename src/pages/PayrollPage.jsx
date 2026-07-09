@@ -275,7 +275,7 @@ export default function PayrollPage() {
                     <td style={{ padding: '12px' }}>${(n.salarioBase || 0).toLocaleString()}</td>
                     <td style={{ padding: '12px', color: 'green' }}>+${(n.bonos || 0).toLocaleString()}</td>
                     <td style={{ padding: '12px', color: 'red' }}>-${(n.descuentos || 0).toLocaleString()}</td>
-                    <td style={{ padding: '12px', fontWeight: 'bold' }}>${(n.monto || 0).toLocaleString()}</td>
+                    <td style={{ padding: '12px', fontWeight: 'bold' }}>${(n.monto + (n.bonos || 0) - (n.descuentos || 0) || 0).toLocaleString()}</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{ padding: '3px 6px', borderRadius: '4px', fontSize: '11px', backgroundColor: n.estado === 'Pagado' ? '#d1e7dd' : '#fff3cd', color: n.estado === 'Pagado' ? '#0f5132' : '#664d03' }}>
                         {n.estado}

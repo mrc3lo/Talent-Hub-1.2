@@ -17,7 +17,7 @@ function setupPayrollIPC() {
   ipcMain.handle('nomina:filterAdvanced', async (event, filtros) => {
     try {
       const db = getDb();
-      const nominasColeccion = db.collection('nominas');
+      const nominasColeccion = db.collection('nomina');
       const { mes, ano } = filtros;
 
       let query = {};
@@ -46,15 +46,15 @@ function setupPayrollIPC() {
       const datosFormateados = resultadosMongo.map(doc => {
         let mesTexto = doc.mes;
         if (typeof doc.mes === 'number') {
-          mesTexto = mesesInversoMap[doc.mes] || 'Julio';
+          mesTexto = mesesInversoMap[doc.mes] || 'Sin registro';
         }
 
         return {
           id: doc._id.toString(),
           empleado: doc.empleado || 'Juan Pérez',
           mes: mesTexto,
-          ano: String(doc.ano || '2026'),
-          salarioBase: Number(doc.salarioBase || 0),
+          ano: String(doc.anio || '2026'),
+          salarioBase: Number(doc.monto || 0),
           bonos: Number(doc.bonos || 0),
           descuentos: Number(doc.descuentos || 0),
           monto: Number(doc.neto || doc.monto || 0),
@@ -74,7 +74,7 @@ function setupPayrollIPC() {
   ipcMain.handle('nomina:create', async (event, nominaData) => {
     try {
       const db = getDb();
-      const nominasColeccion = db.collection('nominas');
+      const nominasColeccion = db.collection('nomina');
 
       const salarioBase = parseFloat(nominaData.salarioBase || 0);
       const bonos = parseFloat(nominaData.bonos || 0);
@@ -90,7 +90,7 @@ function setupPayrollIPC() {
         descuentos: descuentos,
         neto: neto,
         monto: neto,
-        country: nominaData.country || 'ARG',
+        country: nominaData.country || 'CHL',
         estado: nominaData.estado || 'Pendiente',
         fechaCreacion: new Date()
       };
@@ -110,7 +110,7 @@ function setupPayrollIPC() {
   ipcMain.handle('nomina:delete', async (event, id) => {
     try {
       const db = getDb();
-      const nominasColeccion = db.collection('nominas');
+      const nominasColeccion = db.collection('nomina');
       const { ObjectId } = require('mongodb');
 
       await nominasColeccion.deleteOne({ _id: new ObjectId(id) });
